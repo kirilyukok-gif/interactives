@@ -1,0 +1,2980 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BioTech & Smart-Лабораторія — Інтерактивний конструктор 10 клас НУШ</title>
+  <style>
+    /* ==========================================================================
+       БАЗОВІ ЗМІННІ ТА НАЛАШТУВАННЯ ДИЗАЙНУ (БІОТЕХ-ЕСТЕТИКА)
+       ========================================================================== */
+    :root {
+      --bg-main: #f0f9f8;
+      --bg-card: #ffffff;
+      --bg-subtle: #e6f4f1;
+      --text-primary: #0f292e;
+      --text-secondary: #42636b;
+      --text-muted: #6e8c94;
+
+      /* Акцентна палітра (смарагд, бірюза, індиго, корал, бурштин) */
+      --emerald: #10b981;
+      --emerald-dark: #059669;
+      --emerald-light: #d1fae5;
+      --teal: #0d9488;
+      --cyan: #06b6d4;
+      --indigo: #4f46e5;
+      --indigo-light: #e0e7ff;
+      --coral: #f43f5e;
+      --coral-light: #ffe4e6;
+      --amber: #f59e0b;
+      --amber-light: #fef3c7;
+
+      --border-color: #cde5e0;
+      --shadow-sm: 0 2px 8px rgba(13, 148, 136, 0.08);
+      --shadow-md: 0 8px 24px rgba(15, 41, 46, 0.08);
+      --shadow-lg: 0 14px 36px rgba(13, 148, 136, 0.14);
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-main);
+      background-image:
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 10%, rgba(79, 70, 229, 0.09) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(6, 182, 212, 0.1) 0px, transparent 50%);
+      color: var(--text-primary);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+
+    /* ==========================================================================
+       ШАПКА ТА ПАНЕЛЬ ПРОГРЕСУ
+       ========================================================================== */
+    .app-header {
+      background: linear-gradient(135deg, #064e3b 0%, #0f766e 52%, #312e81 100%);
+      color: #ffffff;
+      padding: 1.25rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(6, 78, 59, 0.25);
+    }
+
+    .header-inner {
+      max-width: 1360px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand-logo {
+      width: 46px;
+      height: 46px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      backdrop-filter: blur(6px);
+      flex-shrink: 0;
+    }
+
+    .brand-title h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .badge-nus {
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: #10b981;
+      color: #022c22;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-title p {
+      font-size: 0.83rem;
+      color: #a7f3d0;
+      margin-top: 0.1rem;
+    }
+
+    /* Прогрес-бар у шапці */
+    .header-progress {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 0.55rem 1rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .progress-info {
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .progress-track {
+      width: 140px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #34d399, #fbbf24);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    /* ==========================================================================
+       ОСНОВНИЙ КОНТЕЙНЕР
+       ========================================================================== */
+    .container {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    /* Панель швидкого керування (без особистих даних) */
+    .toolbar-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .toolbar-hint {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-reset-domain {
+      background: var(--bg-subtle);
+      color: var(--teal);
+      border: 1.5px solid var(--border-color);
+      padding: 0.5rem 0.95rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-reset-domain:hover {
+      background: var(--teal);
+      color: #fff;
+      border-color: var(--teal);
+    }
+
+    /* ==========================================================================
+       КРОК 1: ВИБІР СФЕРИ ЗАСТОСУВАННЯ (5 КАРТОК)
+       ========================================================================== */
+    .section-block {
+      margin-bottom: 1.75rem;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1rem;
+    }
+
+    .step-pill {
+      background: linear-gradient(135deg, var(--teal), var(--indigo));
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .section-heading h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .domains-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.9rem;
+    }
+
+    @media (max-width: 1100px) {
+      .domains-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 680px) {
+      .domains-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 440px) {
+      .domains-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .domain-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: left;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .domain-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--teal);
+      box-shadow: var(--shadow-md);
+    }
+
+    .domain-card.active {
+      border-color: var(--emerald);
+      background: linear-gradient(180deg, #ffffff 0%, #ecfdf5 100%);
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
+    }
+
+    .domain-card.active::after {
+      content: "✓ Обрано";
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      background: var(--emerald);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+    }
+
+    .domain-icon-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.65rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .domain-card h3 {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.3rem;
+      line-height: 1.25;
+    }
+
+    .domain-card p {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.35;
+    }
+
+    .domain-badge-count {
+      margin-top: 0.65rem;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--teal);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* ==========================================================================
+       ІНТЕРАКТИВНА SVG-ІНФОГРАФІКА ПОТОКУ ДАНИХ (IoT -> ШІ -> Smart-Дія)
+       ========================================================================== */
+    .infographic-stage {
+      background: linear-gradient(135deg, #082f49 0%, #064e3b 55%, #1e1b4b 100%);
+      border-radius: var(--radius-lg);
+      padding: 1.35rem 1.5rem;
+      margin-bottom: 1.75rem;
+      color: #fff;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .infographic-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .infographic-title {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .pulse-dot {
+      width: 11px;
+      height: 11px;
+      background: #34d399;
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+      animation: pulseRing 1.8s infinite;
+    }
+
+    @keyframes pulseRing {
+      0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.75); }
+      70% { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+    }
+
+    .infographic-title h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .sim-speed-btn {
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      color: #e0f2fe;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .sim-speed-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .svg-diagram-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+    }
+
+    .svg-diagram-wrapper svg {
+      width: 100%;
+      min-width: 740px;
+      height: auto;
+      display: block;
+    }
+
+    /* Анімація руху пакетів даних у SVG */
+    .data-stream-line {
+      stroke-dasharray: 8 6;
+      animation: flowDash 1.4s linear infinite;
+    }
+
+    .data-stream-fast {
+      stroke-dasharray: 10 5;
+      animation: flowDash 0.6s linear infinite;
+    }
+
+    @keyframes flowDash {
+      to {
+        stroke-dashoffset: -28;
+      }
+    }
+
+    /* ==========================================================================
+       КРОК 2: ВИБІР КОМБІНАЦІЇ ТЕХНОЛОГІЙ (ПРЕСЕТИ ТА КОМПОНЕНТИ)
+       ========================================================================== */
+    .presets-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .presets-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .preset-card {
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.9rem 1rem;
+      background: var(--bg-main);
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: left;
+    }
+
+    .preset-card:hover {
+      border-color: var(--indigo);
+      background: #fff;
+    }
+
+    .preset-card.active {
+      border-color: var(--indigo);
+      background: linear-gradient(135deg, #eef2ff 0%, #f0fdfa 100%);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.14);
+    }
+
+    .preset-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--indigo);
+      background: var(--indigo-light);
+      padding: 0.15rem 0.55rem;
+      border-radius: 6px;
+      margin-bottom: 0.4rem;
+    }
+
+    .preset-card h4 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.35rem;
+    }
+
+    .preset-formula {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .formula-chip {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+    }
+
+    /* Тонке налаштування компонентів (ІоТ + ШІ + Smart) */
+    .custom-combo-bar {
+      background: var(--bg-subtle);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+      align-items: center;
+    }
+
+    @media (max-width: 820px) {
+      .custom-combo-bar {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .combo-select-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .combo-select-group label {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--teal);
+    }
+
+    .combo-select {
+      width: 100%;
+      padding: 0.45rem 0.65rem;
+      border-radius: 8px;
+      border: 1.5px solid var(--border-color);
+      background: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .combo-select:focus {
+      border-color: var(--indigo);
+    }
+
+    /* ==========================================================================
+       ДВОКОЛОНКОВИЙ РОБОЧИЙ ПРОСТІР (КРОК 3: 7 ПИТАНЬ | КРОК 4: ЖИВИЙ ПАСПОРТ)
+       ========================================================================== */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.95fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1050px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Картки 7 питань */
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .question-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.2rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .question-card.answered {
+      border-left: 5px solid var(--emerald);
+    }
+
+    .question-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .q-title-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      flex: 1;
+    }
+
+    .q-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: var(--bg-subtle);
+      color: var(--teal);
+      font-weight: 800;
+      font-size: 0.92rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .question-card.answered .q-number {
+      background: var(--emerald);
+      color: #fff;
+    }
+
+    .q-title-box h3 {
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .q-title-box p {
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      margin-top: 0.1rem;
+    }
+
+    /* Перемикач режиму: Підказки / Власний текст */
+    .mode-switcher {
+      display: inline-flex;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 999px;
+      padding: 0.2rem;
+      flex-shrink: 0;
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .mode-btn.active {
+      background: var(--teal);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(13, 148, 136, 0.25);
+    }
+
+    /* Варіанти відповідей (клікабельні картки) */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.55rem;
+    }
+
+    .option-item {
+      border: 1.5px solid var(--border-color);
+      background: #fafdfc;
+      border-radius: var(--radius-sm);
+      padding: 0.7rem 0.9rem;
+      font-size: 0.88rem;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      text-align: left;
+    }
+
+    .option-item:hover {
+      border-color: var(--emerald);
+      background: #f0fdf4;
+    }
+
+    .option-item.selected {
+      border-color: var(--emerald-dark);
+      background: var(--emerald-light);
+      font-weight: 600;
+    }
+
+    .option-radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--teal);
+      margin-top: 2px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .option-item.selected .option-radio {
+      border-color: var(--emerald-dark);
+      background: var(--emerald-dark);
+    }
+
+    .option-item.selected .option-radio::after {
+      content: "";
+      width: 6px;
+      height: 6px;
+      background: #fff;
+      border-radius: 50%;
+    }
+
+    /* Поле власного тексту */
+    .custom-textarea-wrap {
+      display: none;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .custom-textarea-wrap.visible {
+      display: flex;
+    }
+
+    .custom-textarea {
+      width: 100%;
+      min-height: 82px;
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      resize: vertical;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .custom-textarea:focus {
+      border-color: var(--indigo);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    .textarea-hint {
+      font-size: 0.77rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* ==========================================================================
+       КРОК 4: ЖИВИЙ ПАСПОРТ-ІНФОГРАФІКА ПРОЄКТУ (ПРАВА КОЛОНКА)
+       ========================================================================== */
+    .passport-sticky {
+      position: sticky;
+      top: 92px;
+    }
+
+    .passport-card {
+      background: #ffffff;
+      border: 2px solid var(--teal);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .passport-banner {
+      background: linear-gradient(135deg, #0f766e 0%, #10b981 55%, #4f46e5 100%);
+      color: #fff;
+      padding: 1.25rem 1.35rem;
+      position: relative;
+    }
+
+    .passport-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 800;
+      opacity: 0.9;
+      margin-bottom: 0.4rem;
+    }
+
+    .passport-banner h3 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 0.4rem;
+    }
+
+    .passport-meta {
+      font-size: 0.82rem;
+      color: #ecfdf5;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    /* Міні-тріада комбінації у паспорті */
+    .passport-triad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.45rem;
+      background: #f0fdfa;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .triad-pill {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.45rem 0.55rem;
+      text-align: center;
+    }
+
+    .triad-pill span {
+      display: block;
+      font-size: 0.67rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--teal);
+    }
+
+    .triad-pill strong {
+      display: block;
+      font-size: 0.76rem;
+      color: var(--text-primary);
+      margin-top: 0.15rem;
+      line-height: 1.2;
+    }
+
+    /* Список 7 блоків у паспорті */
+    .passport-body {
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      max-height: 540px;
+      overflow-y: auto;
+    }
+
+    .passport-row {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 0.65rem 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .passport-row:hover {
+      border-color: var(--teal);
+      background: #f0fdfa;
+    }
+
+    .passport-row.filled {
+      background: #ffffff;
+      border-color: #a7f3d0;
+    }
+
+    .passport-row-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.2rem;
+    }
+
+    .passport-row-title {
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--teal);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .edit-mini-link {
+      font-size: 0.72rem;
+      color: var(--indigo);
+      font-weight: 700;
+    }
+
+    .passport-row-text {
+      font-size: 0.84rem;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .passport-row-text.empty {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Блок автоматичного оцінювання за рівнями НУШ */
+    .grading-box {
+      padding: 0.95rem 1.25rem;
+      background: linear-gradient(135deg, #f8fafc 0%, #f0fdfa 100%);
+      border-top: 1.5px solid var(--border-color);
+    }
+
+    .grading-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.55rem;
+    }
+
+    .grading-title {
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--text-secondary);
+    }
+
+    .btn-criteria-info {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      color: var(--indigo);
+      font-size: 0.73rem;
+      font-weight: 700;
+      padding: 0.22rem 0.6rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-criteria-info:hover {
+      background: var(--indigo);
+      color: #ffffff;
+      border-color: var(--indigo);
+    }
+
+    .grading-score-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      background: #ffffff;
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.65rem 0.85rem;
+      margin-bottom: 0.55rem;
+    }
+
+    .level-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.28rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .level-none {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .level-initial {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .level-intermediate {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .level-sufficient {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .level-high {
+      background: #d1fae5;
+      color: #047857;
+    }
+
+    .grade-points {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .grade-points span {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    .grading-explanation {
+      font-size: 0.81rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      background: rgba(255, 255, 255, 0.75);
+      border-radius: 10px;
+      padding: 0.55rem 0.7rem;
+      border: 1px dashed var(--border-color);
+    }
+
+    .grading-stats-mini {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--teal);
+      margin-top: 0.45rem;
+    }
+
+    /* Таблиця критеріїв у модальному вікні */
+    .criteria-levels-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1.15rem;
+    }
+
+    .criteria-level-card {
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.7rem 0.85rem;
+      background: #f8fafc;
+    }
+
+    .criteria-level-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.3rem;
+      font-weight: 800;
+      font-size: 0.88rem;
+    }
+
+    .criteria-level-card p {
+      font-size: 0.81rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* Кнопки дій під паспортом */
+    .passport-actions {
+      padding: 1rem 1.25rem;
+      background: #ffffff;
+      border-top: 1px solid var(--border-color);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+
+    .btn-action {
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.85rem;
+      font-size: 0.83rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .btn-check {
+      grid-column: span 2;
+      background: linear-gradient(135deg, var(--emerald-dark), var(--teal));
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.28);
+    }
+
+    .btn-check:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+    }
+
+    .btn-copy {
+      background: var(--indigo-light);
+      color: var(--indigo);
+    }
+
+    .btn-copy:hover {
+      background: var(--indigo);
+      color: #fff;
+    }
+
+    .btn-print {
+      background: var(--amber-light);
+      color: #92400e;
+    }
+
+    .btn-print:hover {
+      background: var(--amber);
+      color: #fff;
+    }
+
+    /* ==========================================================================
+       МОДАЛЬНЕ ВІКНО ПЕРЕВІРКИ ЛОГІКИ ТА ПОВІДОМЛЕНЬ (ЗАМІСТЬ ALERT)
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 41, 46, 0.55);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      max-width: 540px;
+      width: 100%;
+      padding: 1.5rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+      animation: popIn 0.22s ease-out;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.94); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .modal-header h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-close {
+      background: var(--bg-main);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+
+    .feedback-score {
+      background: linear-gradient(135deg, #ecfdf5, #eef2ff);
+      border: 1.5px solid #a7f3d0;
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .feedback-score strong {
+      display: block;
+      font-size: 1.35rem;
+      color: var(--emerald-dark);
+      margin-bottom: 0.2rem;
+    }
+
+    .feedback-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.88rem;
+    }
+
+    .feedback-list li {
+      padding: 0.55rem 0.75rem;
+      border-radius: 10px;
+      background: #f8fafc;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    /* Спливаюче сповіщення (Toast) */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #064e3b;
+      color: #fff;
+      padding: 0.8rem 1.25rem;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      transform: translateY(120%);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1100;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* ==========================================================================
+       СТИЛІ ДЛЯ ДРУКУ / ЗБЕРЕЖЕННЯ В PDF
+       ========================================================================== */
+    @media print {
+      body {
+        background: #fff !important;
+      }
+      .app-header,
+      .toolbar-bar,
+      .section-block,
+      .infographic-stage,
+      .questions-list,
+      .passport-actions,
+      .edit-mini-link {
+        display: none !important;
+      }
+      .workspace-grid {
+        display: block !important;
+      }
+      .passport-sticky {
+        position: static !important;
+      }
+      .passport-card {
+        border: 2px solid #0f766e !important;
+        box-shadow: none !important;
+      }
+      .passport-body {
+        max-height: none !important;
+        overflow: visible !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       ШАПКА ПРОГРАМИ З ПРОГРЕС-БАРОМ
+       ======================================================================== -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true">🧬</div>
+        <div class="brand-title">
+          <h1>
+            BioTech &amp; Smart-Лабораторія
+            <span class="badge-nus">10 клас НУШ</span>
+          </h1>
+          <p>Інформаційні системи на основі ШІ • Інтернет речей (IoT) • Smart-технології</p>
+        </div>
+      </div>
+
+      <div class="header-progress" role="status" aria-live="polite">
+        <div class="progress-info">
+          Заповнено: <span id="progressCount">0</span> / 7
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- ======================================================================
+         ПАНЕЛЬ ШВИДКОГО КЕРУВАННЯ
+         ====================================================================== -->
+    <section class="toolbar-bar" aria-label="Керування дослідженням">
+      <div class="toolbar-hint">
+        <span>🔬</span>
+        <span>Обирай напрям, комбінуй технології та формуй власний паспорт рішення — усі зміни зберігаються для кожної сфери.</span>
+      </div>
+      <button type="button" class="btn-reset-domain" id="btnClearAnswers" title="Очистити відповіді поточної сфери">
+        🔄 Очистити поточну сферу
+      </button>
+    </section>
+
+    <!-- ======================================================================
+         КРОК 1: ВИБІР СФЕРИ ЗАСТОСУВАННЯ (5 КАРТОК)
+         ====================================================================== -->
+    <section class="section-block" aria-labelledby="step1Title">
+      <div class="section-heading">
+        <span class="step-pill">Крок 1</span>
+        <h2 id="step1Title">Обери сферу застосування біо- та хімічних технологій</h2>
+      </div>
+      <div class="domains-grid" id="domainsGrid"></div>
+    </section>
+
+    <!-- ======================================================================
+         ІНТЕРАКТИВНА АНІМОВАНА SVG-ІНФОГРАФІКА (IoT -> ШІ -> Smart-Дія)
+         ====================================================================== -->
+    <section class="infographic-stage" aria-label="Схема роботи кіберфізичної біосистеми">
+      <div class="infographic-header">
+        <div class="infographic-title">
+          <span class="pulse-dot"></span>
+          <h3 id="diagramMainTitle">Жива схема потоку даних: Медицина та діагностика</h3>
+        </div>
+        <button type="button" class="sim-speed-btn" id="btnToggleSpeed">⚡ Прискорити потік даних</button>
+      </div>
+
+      <div class="svg-diagram-wrapper">
+        <svg viewBox="0 0 960 215" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Інфографіка: Об'єкт дослідження -> IoT Датчики -> Хмара та ШІ -> Smart-Дія">
+          <defs>
+            <linearGradient id="cardGrad1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#0d9488" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#065f46" stop-opacity="0.55"/>
+            </linearGradient>
+            <linearGradient id="cardGrad2" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#0284c7" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#1e3a8a" stop-opacity="0.55"/>
+            </linearGradient>
+            <linearGradient id="cardGrad3" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#6366f1" stop-opacity="0.4"/>
+              <stop offset="100%" stop-color="#4338ca" stop-opacity="0.6"/>
+            </linearGradient>
+            <linearGradient id="cardGrad4" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#10b981" stop-opacity="0.38"/>
+              <stop offset="100%" stop-color="#047857" stop-opacity="0.6"/>
+            </linearGradient>
+            <marker id="arrowHead" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+              <path d="M0,1 L7,4 L0,7 Z" fill="#34d399"/>
+            </marker>
+          </defs>
+
+          <!-- З'єднувальні анімовані лінії -->
+          <line id="flowLine1" x1="210" y1="102" x2="262" y2="102" stroke="#34d399" stroke-width="3.5" class="data-stream-line" marker-end="url(#arrowHead)"/>
+          <line id="flowLine2" x1="462" y1="102" x2="514" y2="102" stroke="#38bdf8" stroke-width="3.5" class="data-stream-line" marker-end="url(#arrowHead)"/>
+          <line id="flowLine3" x1="714" y1="102" x2="766" y2="102" stroke="#fbbf24" stroke-width="3.5" class="data-stream-line" marker-end="url(#arrowHead)"/>
+
+          <!-- Зворотний зв'язок (нижня дуга) -->
+          <path d="M 855 178 Q 480 218 115 178" fill="none" stroke="rgba(167, 243, 208, 0.35)" stroke-width="2" stroke-dasharray="5 5"/>
+          <text x="480" y="205" fill="#a7f3d0" font-size="11" font-weight="600" text-anchor="middle">
+            ↻ Безперервний зворотний зв'язок у реальному часі (Closed-Loop BioSystem)
+          </text>
+
+          <!-- ВУЗОЛ 1: ОБ'ЄКТ ДОСЛІДЖЕННЯ -->
+          <g transform="translate(15, 22)">
+            <rect width="195" height="155" rx="18" fill="url(#cardGrad1)" stroke="#34d399" stroke-width="1.5"/>
+            <text x="97" y="24" fill="#6ee7b7" font-size="10.5" font-weight="800" text-anchor="middle" letter-spacing="0.8">1. БІО / ХІМ ОБ'ЄКТ</text>
+            <text id="svgNode1Icon" x="97" y="68" font-size="34" text-anchor="middle">🧬</text>
+            <text id="svgNode1Title" x="97" y="102" fill="#ffffff" font-size="13" font-weight="700" text-anchor="middle">Організм пацієнта</text>
+            <text id="svgNode1Sub" x="97" y="122" fill="#d1fae5" font-size="10.8" text-anchor="middle">Рівень глюкози та пульс</text>
+            <rect x="32" y="132" width="130" height="16" rx="8" fill="rgba(0,0,0,0.28)"/>
+            <text x="97" y="143" fill="#a7f3d0" font-size="9.5" font-weight="600" text-anchor="middle">Аналогові сигнали</text>
+          </g>
+
+          <!-- ВУЗОЛ 2: ІНТЕРНЕТ РЕЧЕЙ (IoT СЕНСОРИ) -->
+          <g transform="translate(267, 22)">
+            <rect width="195" height="155" rx="18" fill="url(#cardGrad2)" stroke="#38bdf8" stroke-width="1.5"/>
+            <text x="97" y="24" fill="#7dd3fc" font-size="10.5" font-weight="800" text-anchor="middle" letter-spacing="0.8">2. ІНТЕРНЕТ РЕЧЕЙ (IoT)</text>
+            <text id="svgNode2Icon" x="97" y="68" font-size="34" text-anchor="middle">📡</text>
+            <text id="svgNode2Title" x="97" y="102" fill="#ffffff" font-size="12.5" font-weight="700" text-anchor="middle">Біосенсор на шкірі</text>
+            <text id="svgNode2Sub" x="97" y="122" fill="#e0f2fe" font-size="10.8" text-anchor="middle">Зчитування кожні 5 хв</text>
+            <rect x="32" y="132" width="130" height="16" rx="8" fill="rgba(0,0,0,0.28)"/>
+            <text x="97" y="143" fill="#7dd3fc" font-size="9.5" font-weight="600" text-anchor="middle">Передача по Bluetooth/Wi-Fi</text>
+          </g>
+
+          <!-- ВУЗОЛ 3: ШТУЧНИЙ ІНТЕЛЕКТ (ШІ АНАЛІЗ) -->
+          <g transform="translate(519, 22)">
+            <rect width="195" height="155" rx="18" fill="url(#cardGrad3)" stroke="#a5b4fc" stroke-width="1.5"/>
+            <text x="97" y="24" fill="#c7d2fe" font-size="10.5" font-weight="800" text-anchor="middle" letter-spacing="0.8">3. АНАЛІЗ ШІ (AI)</text>
+            <text id="svgNode3Icon" x="97" y="68" font-size="34" text-anchor="middle">🧠</text>
+            <text id="svgNode3Title" x="97" y="102" fill="#ffffff" font-size="12.5" font-weight="700" text-anchor="middle">Прогнозування ШІ</text>
+            <text id="svgNode3Sub" x="97" y="122" fill="#e0e7ff" font-size="10.8" text-anchor="middle">Пошук відхилень від норми</text>
+            <rect x="32" y="132" width="130" height="16" rx="8" fill="rgba(0,0,0,0.28)"/>
+            <text x="97" y="143" fill="#c7d2fe" font-size="9.5" font-weight="600" text-anchor="middle">Нейромережа / Великі дані</text>
+          </g>
+
+          <!-- ВУЗОЛ 4: SMART-РЕЗУЛЬТАТ / ДІЯ -->
+          <g transform="translate(771, 22)">
+            <rect width="175" height="155" rx="18" fill="url(#cardGrad4)" stroke="#fbbf24" stroke-width="1.5"/>
+            <text x="87" y="24" fill="#fde68a" font-size="10.5" font-weight="800" text-anchor="middle" letter-spacing="0.8">4. SMART-ДІЯ</text>
+            <text id="svgNode4Icon" x="87" y="68" font-size="34" text-anchor="middle">📲</text>
+            <text id="svgNode4Title" x="87" y="102" fill="#ffffff" font-size="12.5" font-weight="700" text-anchor="middle">Smart-інсулін / Смартфон</text>
+            <text id="svgNode4Sub" x="87" y="122" fill="#fef3c7" font-size="10.8" text-anchor="middle">Точна доза та сповіщення</text>
+            <rect x="22" y="132" width="130" height="16" rx="8" fill="rgba(0,0,0,0.28)"/>
+            <text x="87" y="143" fill="#fde68a" font-size="9.5" font-weight="600" text-anchor="middle">Автоматичне рішення</text>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         КРОК 2: ВИБІР КОМБІНАЦІЇ ТЕХНОЛОГІЙ (ПРЕСЕТИ + НАЛАШТУВАННЯ)
+         ====================================================================== -->
+    <section class="section-block" aria-labelledby="step2Title">
+      <div class="section-heading">
+        <span class="step-pill">Крок 2</span>
+        <h2 id="step2Title">Обери комбінацію технологій (Готовий сценарій або власна збірка)</h2>
+      </div>
+
+      <div class="presets-container">
+        <div class="presets-grid" id="presetsGrid"></div>
+
+        <div class="custom-combo-bar" aria-label="Конструктор зв'язки компонентів">
+          <div class="combo-select-group">
+            <label for="selectIoT">📡 Компонент IoT (Збір даних):</label>
+            <select id="selectIoT" class="combo-select"></select>
+          </div>
+          <div class="combo-select-group">
+            <label for="selectAI">🧠 Компонент ШІ (Аналіз):</label>
+            <select id="selectAI" class="combo-select"></select>
+          </div>
+          <div class="combo-select-group">
+            <label for="selectSmart">⚡ Smart-пристрій (Дія):</label>
+            <select id="selectSmart" class="combo-select"></select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         КРОК 3 ТА КРОК 4: КОНСТРУКТОР 7 ПИТАНЬ + ЖИВИЙ ПАСПОРТ ПРОЄКТУ
+         ====================================================================== -->
+    <div class="workspace-grid">
+      <!-- ЛІВА КОЛОНКА: 7 ДОСЛІДНИЦЬКИХ ПИТАНЬ -->
+      <section aria-labelledby="step3Title">
+        <div class="section-heading">
+          <span class="step-pill">Крок 3</span>
+          <h2 id="step3Title">Досліди систему за 7 питаннями (обери варіант або впиши свій)</h2>
+        </div>
+
+        <div class="questions-list" id="questionsList"></div>
+      </section>
+
+      <!-- ПРАВА КОЛОНКА: ПІДСУМКОВА КАРТКА-ІНФОГРАФІКА (ПАСПОРТ ПРОЄКТУ) -->
+      <aside class="passport-sticky" aria-labelledby="step4Title">
+        <div class="section-heading">
+          <span class="step-pill">Крок 4</span>
+          <h2 id="step4Title">Паспорт технологічного рішення</h2>
+        </div>
+
+        <div class="passport-card" id="passportCard">
+          <div class="passport-banner">
+            <div class="passport-top-row">
+              <span>Біотехнологічний паспорт • НУШ 10</span>
+              <span id="passportBadgeStatus">Чернетка</span>
+            </div>
+            <h3 id="passportDomainTitle">🧬 Медицина та діагностика</h3>
+            <div class="passport-meta">
+              <span id="passportPresetMeta">🔗 Сценарій: Обрано</span>
+              <span>🧪 Хіміко-біологічний профіль</span>
+            </div>
+          </div>
+
+          <!-- Тріада компонентів -->
+          <div class="passport-triad">
+            <div class="triad-pill">
+              <span>📡 IoT-сенсор</span>
+              <strong id="triadIoT">—</strong>
+            </div>
+            <div class="triad-pill">
+              <span>🧠 Алгоритм ШІ</span>
+              <strong id="triadAI">—</strong>
+            </div>
+            <div class="triad-pill">
+              <span>⚡ Smart-дія</span>
+              <strong id="triadSmart">—</strong>
+            </div>
+          </div>
+
+          <!-- 7 заповнених блоків (клік переводить до редагування) -->
+          <div class="passport-body" id="passportBody"></div>
+
+          <!-- Блок автоматичного оцінювання за критеріями інформатичної освітньої галузі -->
+          <div class="grading-box" aria-live="polite">
+            <div class="grading-header">
+              <span class="grading-title">🎓 Оцінювання (Інформатична галузь НУШ)</span>
+              <button type="button" class="btn-criteria-info" id="btnShowCriteria">ℹ️ Критерії (1–12)</button>
+            </div>
+            <div class="grading-score-row">
+              <span class="level-badge level-none" id="gradeLevelBadge">Не оцінено</span>
+              <div class="grade-points" id="gradePointsDisplay">0 <span>/ 12 балів</span></div>
+            </div>
+            <div class="grading-explanation" id="gradeExplanation">
+              Обери варіанти відповідей або сформулюй власні думки у блоках ліворуч, щоб отримати автоматичну оцінку.
+            </div>
+            <div class="grading-stats-mini">
+              <span id="statAnswered">Заповнено пунктів: 0/7</span>
+              <span id="statCustom">Власних відповідей: 0</span>
+            </div>
+          </div>
+
+          <!-- Кнопки взаємодії -->
+          <div class="passport-actions">
+            <button type="button" class="btn-action btn-check" id="btnCheckLogic">
+              🔍 Перевірити логіку комбінації
+            </button>
+            <button type="button" class="btn-action btn-copy" id="btnCopyReport">
+              📋 Скопіювати звіт вчителю
+            </button>
+            <button type="button" class="btn-action btn-print" id="btnPrintReport">
+              🖨️ Друк / Зберегти PDF
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- МОДАЛЬНЕ ВІКНО ПЕРЕВІРКИ ЛОГІКИ -->
+  <div class="modal-backdrop" id="feedbackModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalTitle">🧪 Висновок експертної лабораторії</h3>
+        <button type="button" class="modal-close" id="btnCloseModal" aria-label="Закрити">✕</button>
+      </div>
+      <div class="feedback-score" id="feedbackScoreBox"></div>
+      <ul class="feedback-list" id="feedbackDetailsList"></ul>
+      <button type="button" class="btn-action btn-check" style="width: 100%;" id="btnModalOk">
+        Зрозуміло, продовжуємо роботу!
+      </button>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНЕ ВІКНО КРИТЕРІЇВ ОЦІНЮВАННЯ НУШ -->
+  <div class="modal-backdrop" id="criteriaModal" role="dialog" aria-modal="true" aria-labelledby="criteriaModalTitle">
+    <div class="modal-box" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 id="criteriaModalTitle">📋 Критерії оцінювання (Інформатична галузь НУШ)</h3>
+        <button type="button" class="modal-close" id="btnCloseCriteria" aria-label="Закрити">✕</button>
+      </div>
+      <div class="criteria-levels-list">
+        <div class="criteria-level-card">
+          <div class="criteria-level-head">
+            <span class="level-badge level-initial">Початковий рівень</span>
+            <span>1–3 бали</span>
+          </div>
+          <p>Обрано сферу та комбінацію технологій, заповнено 1–3 базові пункти (переважно готові підказки), фрагментарне уявлення про зв'язок між сенсорами IoT, аналізом ШІ та Smart-дією.</p>
+        </div>
+        <div class="criteria-level-card">
+          <div class="criteria-level-head">
+            <span class="level-badge level-intermediate">Середній рівень</span>
+            <span>4–6 балів</span>
+          </div>
+          <p>Заповнено 4–5 пунктів дослідження (з використанням готових варіантів або коротких реплік), учень розпізнає компоненти інформаційної системи, але не повністю розкриває ризики чи перспективи розвитку.</p>
+        </div>
+        <div class="criteria-level-card">
+          <div class="criteria-level-head">
+            <span class="level-badge level-sufficient">Достатній рівень</span>
+            <span>7–9 балів</span>
+          </div>
+          <p>Заповнено 6–7 пунктів паспорта рішення, логічно поєднано IoT-пристрої, алгоритми ШІ та біо/хімічну проблему, визначено вплив і ризики, додано 1–2 власні уточнення.</p>
+        </div>
+        <div class="criteria-level-card">
+          <div class="criteria-level-head">
+            <span class="level-badge level-high">Високий рівень</span>
+            <span>10–12 балів</span>
+          </div>
+          <p>Виконано всі 7 завдань, учень демонструє самостійність мислення та критичний аналіз — надає змістовні <strong>власні варіанти відповідей</strong> (від 3 і більше розгорнутих відповідей у режимі «Вписати своє»), обґрунтовує доцільність комбінації технологій.</p>
+        </div>
+      </div>
+      <button type="button" class="btn-action btn-check" style="width: 100%;" id="btnCriteriaOk">
+        Зрозуміло
+      </button>
+    </div>
+  </div>
+
+  <!-- СПЛИВАЮЧЕ ПОВІДОМЛЕННЯ (TOAST) -->
+  <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
+
+  <script>
+    /* ==========================================================================
+       БАЗА ДАНИХ ОСВІТНЬОЇ СИМУЛЯЦІЇ (10 КЛАС НУШ, ХІМІКО-БІОЛОГІЧНИЙ ПРОФІЛЬ)
+       ========================================================================== */
+    const DOMAINS_DATA = [
+      {
+        id: "medicine",
+        icon: "🧬",
+        name: "Медицина та діагностика",
+        shortDesc: "Раннє виявлення хвороб, розумні біосенсори та персональна терапія",
+        accentBg: "#ffe4e6",
+        svg: {
+          objIcon: "🩸", objTitle: "Організм пацієнта", objSub: "Глюкоза крові / Знімки легень",
+          iotIcon: "📟", iotTitle: "Глюкозний сенсор", iotSub: "Безперервний замір 24/7",
+          aiIcon: "🧠", aiTitle: "Медичний ШІ", aiSub: "Розпізнавання патологій",
+          smartIcon: "💉", smartTitle: "Smart-помпа / Лікар", smartSub: "Точна подача інсуліну"
+        },
+        iotOptions: [
+          "Підшкірний біосенсор глюкози (CGM)",
+          "Цифровий рентген та МРТ-сканер",
+          "Розумний кардіопластир ЕКГ"
+        ],
+        aiOptions: [
+          "Комп'ютерний зір для аналізу знімків",
+          "Прогнозна нейромережа рівня цукру",
+          "Алгоритм виявлення аритмій"
+        ],
+        smartOptions: [
+          "Автоматична інсулінова помпа",
+          "Мобільний додаток лікаря і пацієнта",
+          "Smart-сигналізація швидкої допомоги"
+        ],
+        presets: [
+          {
+            id: "med_1",
+            tag: "Сценарій А • Ендокринологія",
+            title: "Розумний контроль діабету (Штучна підшлункова)",
+            iot: "Підшкірний біосенсор глюкози (CGM)",
+            ai: "Прогнозна нейромережа рівня цукру",
+            smart: "Автоматична інсулінова помпа",
+            defaultAnswers: {
+              0: "Система замкненого циклу: підшкірний IoT-сенсор глюкози + алгоритм прогнозування ШІ + автоматична Smart-помпа інсуліну.",
+              1: "Небезпечні різкі стрибки або падіння рівня глюкози в крові у людей із цукровим діабетом, особливо під час сну.",
+              2: "Сенсор на шкірі кожні 5 хвилин вимірює рівень глюкози та передає дані на смартфон. ШІ обчислює тенденцію (чи цукор росте, чи падає) і дає команду Smart-помпі ввести мікродозу інсуліну."
+            }
+          },
+          {
+            id: "med_2",
+            tag: "Сценарій Б • Радіологія",
+            title: "ШІ-діагностика за медичними знімками",
+            iot: "Цифровий рентген та МРТ-сканер",
+            ai: "Комп'ютерний зір для аналізу знімків",
+            smart: "Мобільний додаток лікаря і пацієнта",
+            defaultAnswers: {
+              0: "Цифровий діагностичний томограф (IoT) у поєднанні з комп'ютерним зором на основі глибокого навчання (ШІ).",
+              1: "Людська втома лікарів-рентгенологів та ризик пропустити мікроскопічні ознаки хвороби на ранній стадії.",
+              2: "Цифровий апарат робить знімок у високій роздільній здатності й одразу надсилає в хмару. ШІ порівнює його з мільйонами еталонних знімків за секунди й підсвічує лікарю підозрілі ділянки."
+            }
+          },
+          {
+            id: "med_3",
+            tag: "Сценарій В • Кардіологія",
+            title: "Дистанційний моніторинг серця пацієнта",
+            iot: "Розумний кардіопластир ЕКГ",
+            ai: "Алгоритм виявлення аритмій",
+            smart: "Smart-сигналізація швидкої допомоги",
+            defaultAnswers: {
+              0: "Носимий IoT-кардіопластир із бездротовою передачею даних + ШІ-аналізатор серцевого ритму.",
+              1: "Приховані порушення ритму серця, які трапляються рідко і не фіксуються під час короткого візиту в поліклініку.",
+              2: "Пластир безперервно зчитує електричні імпульси серця. ШІ відфільтровує перешкоди від рухів людини, розпізнає небезпечну аритмію та миттєво надсилає кардіограму лікарю."
+            }
+          }
+        ],
+        questions: [
+          {
+            title: "1. Технологія — Що досліджуємо?",
+            subtitle: "Які саме компоненти ШІ, IoT та Smart-пристроїв поєднані в цій системі?",
+            options: [
+              "Підшкірний IoT-біосенсор глюкози, хмарний алгоритм прогнозування ШІ та автоматична Smart-помпа.",
+              "Цифровий рентген/МРТ-сканер із мережевим доступом та система комп'ютерного зору (ШІ) для пошуку патологій.",
+              "Носимий IoT-кардіосенсор, мобільний застосунок та нейромережа для розпізнавання збоїв серцевого ритму."
+            ]
+          },
+          {
+            title: "2. Проблема — Яку реальну проблему вона розв'язує?",
+            subtitle: "Чому традиційних методів (без ШІ та IoT) тут недостатньо?",
+            options: [
+              "Запобігає критичним станам (гіпоглікемії), оскільки контролює показники крові безперервно, навіть уночі.",
+              "Прискорює виявлення онкології та пневмоній на ранніх стадіях, зменшуючи ймовірність помилки через втому лікаря.",
+              "Дозволяє вчасно виявити приховану аритмію у пацієнтів поза межами лікарні та запобігти інсульту."
+            ]
+          },
+          {
+            title: "3. Як це працює? — Ланцюжок «Дані → ШІ → Дія»",
+            subtitle: "Поясни принцип роботи простою мовою для учнів 10 класу.",
+            options: [
+              "Біосенсор визначає концентрацію глюкози в міжклітинній рідині → передає сигнал по Bluetooth → ШІ прогнозує зміну цукру на 30 хв уперед → Smart-помпа автоматично коригує дозу інсуліну.",
+              "Сканер оцифровує зображення органу → ШІ шукає аномальні плями та порівнює їх із базою діагнозів → формує підказку для лікаря з виділенням зон ризику.",
+              "Датчики на грудях фіксують ЕКГ → смартфон передає потік даних у хмару → ШІ знаходить збій ритму → надсилає тривожне сповіщення кардіологу та родичам."
+            ]
+          },
+          {
+            title: "4. Реальний приклад — Хто і де це вже використовує?",
+            subtitle: "Наведи реальні системи, клініки або медичні розробки у світі чи Україні.",
+            options: [
+              "Системи безперервного моніторингу Dexcom G7 та FreeStyle Libre у поєднанні з інсуліновими помпами Medtronic.",
+              "Українські та світові медичні центри використовують ШІ-платформи (наприклад, Lunit INSIGHT, Aidoc) для аналізу КТ і рентгену.",
+              "Розумні кардіомонітори Zio Patch та системи телемедицини у кардіологічних відділеннях."
+            ]
+          },
+          {
+            title: "5. Вплив — Що стало можливим, швидшим, дешевшим, точнішим або безпечнішим?",
+            subtitle: "Обери ключовий позитивний ефект від впровадження технології.",
+            options: [
+              "Стало безпечнішим і точнішим: автоматичне дозування ліків рятує життя і зменшує кількість ускладнень.",
+              "Стало набагато швидшим і точнішим: аналіз знімка триває 10 секунд замість годин очікування у черзі.",
+              "Стало можливим цілодобове спостереження за пацієнтом удома, що дешевше за тривале перебування в стаціонарі."
+            ]
+          },
+          {
+            title: "6. Обмеження і ризики — Які проблеми створює технологія?",
+            subtitle: "Подумай про безпеку пацієнта, приватність біоданих і технічні збої.",
+            options: [
+              "Висока вартість витратних сенсорів і ризик технічного збою або розрядження батареї пристрою.",
+              "Питання відповідальності: хто відповідає за помилку діагнозу — розробник ШІ чи лікар? Ризик витоку медичної таємниці.",
+              "Залежність від стабільного інтернету та ризик хибних тривог при неправильному закріпленні датчика."
+            ]
+          },
+          {
+            title: "7. Майбутнє — Як це рішення можна розвивати далі?",
+            subtitle: "Запропонуй ідею вдосконалення для медицини майбутнього.",
+            options: [
+              "Створення неінвазивних сенсорів (без проколу шкіри — за аналізом поту чи світловим спектром) та мультигормональних помп.",
+              "Поєднання аналізу знімків із генетичним паспортом пацієнта для підбору індивідуальних ліків.",
+              "Інтеграція всіх біодатчиків людини в єдиного віртуального медичного асистента в державній системі eHealth."
+            ]
+          }
+        ]
+      },
+
+      /* ----------------------------------------------------------------------
+         СФЕРА 2: РОЗУМНЕ ЗЕМЛЕРОБСТВО (SMART-АГРО)
+         ---------------------------------------------------------------------- */
+      {
+        id: "agro",
+        icon: "🌱",
+        name: "Розумне землеробство",
+        shortDesc: "Точне зрошення, агродрони та раннє виявлення хвороб рослин",
+        accentBg: "#d1fae5",
+        svg: {
+          objIcon: "🌾", objTitle: "Поле та рослини", objSub: "Вологість ґрунту і листя",
+          iotIcon: "🌡️", iotTitle: "IoT-метеостанція", iotSub: "Датчики ґрунту + дрон",
+          aiIcon: "🤖", aiTitle: "Агро-ШІ", aiSub: "Аналіз спектру листя",
+          smartIcon: "💧", smartTitle: "Smart-полив / Дрон", smartSub: "Точкове внесення води"
+        },
+        iotOptions: [
+          "Підземні IoT-датчики вологості та NPK-складу ґрунту",
+          "Агродрон із мультиспектральною камерою",
+          "Метеостанція з датчиками роси та температури"
+        ],
+        aiOptions: [
+          "Нейромережа прогнозування посухи та врожайності",
+          "Комп'ютерний зір для розпізнавання шкідників і бур'янів",
+          "Алгоритм розрахунку доз мінеральних добрив"
+        ],
+        smartOptions: [
+          "Автоматизована система крапельного зрошення",
+          "Дрон-обприскувач точкової дії",
+          "Роботизований культиватор"
+        ],
+        presets: [
+          {
+            id: "agro_1",
+            tag: "Сценарій А • Гідрологія ґрунту",
+            title: "Розумне крапельне зрошення (Smart-полив)",
+            iot: "Підземні IoT-датчики вологості та NPK-складу ґрунту",
+            ai: "Нейромережа прогнозування посухи та врожайності",
+            smart: "Автоматизована система крапельного зрошення",
+            defaultAnswers: {
+              0: "Мережа ґрунтових IoT-датчиків вологості + ШІ-модель погоди та випаровування + клапани Smart-поливу.",
+              1: "Перевитрата прісної води, засолення ґрунтів та загибель врожаю через нерівномірний полив.",
+              2: "Датчики на глибині коренів вимірюють вологість. ШІ поєднує ці дані з прогнозом погоди (чи буде дощ) і відкриває клапани поливу лише на тих ділянках поля, де рослинам справді потрібна вода."
+            }
+          },
+          {
+            id: "agro_2",
+            tag: "Сценарій Б • Захист рослин",
+            title: "Дрони та ШІ проти шкідників і грибків",
+            iot: "Агродрон із мультиспектральною камерою",
+            ai: "Комп'ютерний зір для розпізнавання шкідників і бур'янів",
+            smart: "Дрон-обприскувач точкової дії",
+            defaultAnswers: {
+              0: "Мультиспектральні камери на дронах (IoT) + комп'ютерний зір (ШІ) + дрон-обприскувач точкової дії.",
+              1: "Забруднення ґрунтів і продуктів пестицидами через суцільне обприскування всього поля «наосліп».",
+              2: "Дрон-розвідник фотографує поле. ШІ за відтінком листя (навіть в інфрачервоному спектрі) знаходить осередок хвороби та відправляє туди дрон-обприскувач для локальної обробки."
+            }
+          },
+          {
+            id: "agro_3",
+            tag: "Сценарій В • Агрохімія",
+            title: "Точне внесення мінеральних добрив",
+            iot: "Метеостанція з датчиками роси та температури",
+            ai: "Алгоритм розрахунку доз мінеральних добрив",
+            smart: "Роботизований культиватор",
+            defaultAnswers: {
+              0: "Аналізатори вмісту Нітрогену, Фосфору та Калію в ґрунті + ШІ-планувальник живлення рослин + розумний розкидач.",
+              1: "Надлишок нітратів у врожаї та змивання добрив у річки (що викликає «цвітіння» води).",
+              2: "Сенсори створюють хімічну карту поля. ШІ розраховує, скільки мінералів не вистачає на кожному квадратному метрі, а розумна техніка автоматично змінює дозу під час руху."
+            }
+          }
+        ],
+        questions: [
+          {
+            title: "1. Технологія — Що досліджуємо?",
+            subtitle: "Опиши поєднання агросенсорів, ШІ та розумної техніки.",
+            options: [
+              "Мережа ґрунтових IoT-датчиків вологості/температури, хмарний ШІ-прогноз та автоматичні клапани крапельного поливу.",
+              "Мультиспектральні камери на агродронах, нейромережа розпізнавання хвороб рослин та дрони-обприскувачі.",
+              "Smart-теплиця з автоматичним контролем освітлення, вологості повітря, концентрації CO₂ та живлення рослин."
+            ]
+          },
+          {
+            title: "2. Проблема — Яку реальну проблему вона розв'язує?",
+            subtitle: "Які екологічні та господарські виклики долає ця система?",
+            options: [
+              "Економить дефіцитну прісну воду та запобігає виснаженню ґрунтів під час літніх посух.",
+              "Зменшує використання хімічних пестицидів на 70–80%, захищаючи бджіл, ґрунтові бактерії та здоров'я людей.",
+              "Дозволяє вчасно виявити грибкові інфекції рослин до того, як вони знищать увесь врожай."
+            ]
+          },
+          {
+            title: "3. Як це працює? — Ланцюжок «Дані → ШІ → Дія»",
+            subtitle: "Поясни шлях сигналу від рослини до розумної дії.",
+            options: [
+              "Датчики у ґрунті фіксують падіння вологості → дані йдуть на сервер → ШІ звіряє їх із прогнозом дощу → вмикає Smart-полив лише для сухих ділянок.",
+              "Дрон сканує листя у видимому та інфрачервоному діапазоні → ШІ знаходить ділянки зі зниженим хлорофілом → передає координати роботу-обприскувачу.",
+              "Сенсори CO₂ та освітленості вимірюють інтенсивність фотосинтезу → ШІ підбирає оптимальний спектр фітоламп і температуру."
+            ]
+          },
+          {
+            title: "4. Реальний приклад — Хто і де це вже використовує?",
+            subtitle: "Наведи реальні приклади в Україні та світі.",
+            options: [
+              "Українські агрокомпанії (Kernel, МХП) та стартап DroneUA використовують дрони та ШІ-платформи для моніторингу полів.",
+              "Ізраїльська компанія Netafim впроваджує системи розумного крапельного зрошення з ШІ у посушливих регіонах світу.",
+              "Система John Deere See & Spray використовує камери та ШІ, щоб розпізнавати бур'яни й обприскувати лише їх."
+            ]
+          },
+          {
+            title: "5. Вплив — Що стало можливим, швидшим, дешевшим, точнішим або безпечнішим?",
+            subtitle: "Оціни переваги для природи й людини.",
+            options: [
+              "Стало дешевшим і безпечнішим: економія води й добрив до 40%, а продукція містить менше залишків хімікатів.",
+              "Стало швидшим і точнішим: дрон обстежує 100 гектарів поля за 20 хвилин із точністю до кожної рослини.",
+              "Стало можливим вирощувати врожай навіть у регіонах із несприятливим кліматом та дефіцитом води."
+            ]
+          },
+          {
+            title: "6. Обмеження і ризики — Які проблеми створює технологія?",
+            subtitle: "Які бар'єри існують для фермерів та екосистем?",
+            options: [
+              "Висока початкова вартість обладнання (дронів, датчиків), що складно для малих фермерських господарств.",
+              "Відсутність стабільного мобільного зв'язку та інтернету на віддалених полях.",
+              "Потреба в навчанні агрономів роботі з цифровими картами та ризик пошкодження датчиків сільгосптехнікою."
+            ]
+          },
+          {
+            title: "7. Майбутнє — Як це рішення можна розвивати далі?",
+            subtitle: "Як виглядатиме агрономія через 10 років?",
+            options: [
+              "Повністю автономні «розумні ферми», де роботи-ровери на сонячних батареях самі прополюють і збирають врожай.",
+              "Поєднання супутникових знімків із мікробіологічним аналізом ґрунту для відновлення родючості чорноземів.",
+              "Біосенсори, які зчитують електричні сигнали самих рослин про стрес ще до появи зовнішніх ознак."
+            ]
+          }
+        ]
+      },
+
+      /* ----------------------------------------------------------------------
+         СФЕРА 3: ЕКОЛОГІЧНИЙ МОНІТОРИНГ
+         ---------------------------------------------------------------------- */
+      {
+        id: "ecology",
+        icon: "🌍",
+        name: "Екологічний моніторинг",
+        shortDesc: "Контроль чистоти повітря й води, захист лісів та біорізноманіття",
+        accentBg: "#cffafe",
+        svg: {
+          objIcon: "🌲", objTitle: "Екосистема (Ліс/Річка)", objSub: "Повітря, вода, фауна",
+          iotIcon: "🛰️", iotTitle: "Еко-датчики / Фотопастки", iotSub: "Замір CO₂, PM2.5, pH",
+          aiIcon: "🧠", aiTitle: "Екологічний ШІ", aiSub: "Виявлення пожеж і видів",
+          smartIcon: "🚨", smartTitle: "Еко-карта / Служби", smartSub: "Раннє оповіщення загроз"
+        },
+        iotOptions: [
+          "Мережа міських датчиків пилу PM2.5 та газів (CO, NO₂)",
+          "Акустичні сенсори та фотопастки в заповіднику",
+          "Автономні річкові буї з датчиками pH та розчиненого O₂"
+        ],
+        aiOptions: [
+          "ШІ-розпізнавання звуків бензопил та рідкісних птахів",
+          "Алгоритм прогнозування поширення смогу та пожеж",
+          "Нейромережа виявлення хімічного забруднення води"
+        ],
+        smartOptions: [
+          "Онлайн-карта якості повітря для громадян",
+          "Автоматичний виклик лісової охорони та ДСНС",
+          "Розумні шлюзи очисних споруд"
+        ],
+        presets: [
+          {
+            id: "eco_1",
+            tag: "Сценарій А • Атмосфера міста",
+            title: "Моніторинг чистоти повітря та смогу",
+            iot: "Мережа міських датчиків пилу PM2.5 та газів (CO, NO₂)",
+            ai: "Алгоритм прогнозування поширення смогу та пожеж",
+            smart: "Онлайн-карта якості повітря для громадян",
+            defaultAnswers: {
+              0: "Розподілена мережа IoT-станцій якості повітря (датчики дрібнодисперсного пилу PM2.5 і газів) + ШІ-модель вітрів.",
+              1: "Непомітне для ока забруднення повітря вихлопами, димом від пожеж чи промисловими викидами.",
+              2: "Сенсори на будинках кожну хвилину вимірюють концентрацію пилу та чадного газу. ШІ аналізує напрямок вітру, визначає джерело забруднення і попереджає мешканців через додаток."
+            }
+          },
+          {
+            id: "eco_2",
+            tag: "Сценарій Б • Біорізноманіття",
+            title: "Захист лісів від браконьєрів та пожеж",
+            iot: "Акустичні сенсори та фотопастки в заповіднику",
+            ai: "ШІ-розпізнавання звуків бензопил та рідкісних птахів",
+            smart: "Автоматичний виклик лісової охорони та ДСНС",
+            defaultAnswers: {
+              0: "Сонячні IoT-мікрофони та фотопастки на деревах + аудіо- та відео-ШІ для розпізнавання звуків та тварин.",
+              1: "Незаконна вирубка лісів, браконьєрство та труднощі в обліку рідкісних червонокнижних тварин.",
+              2: "Акустичні датчики постійно «слухають» ліс. Якщо ШІ чує звук бензопили чи пострілу — він миттєво надсилає GPS-координати єгерям, а голоси птахів записує в базу біорізноманіття."
+            }
+          },
+          {
+            id: "eco_3",
+            tag: "Сценарій В • Гідросфера",
+            title: "Розумний контроль чистоти річок і озер",
+            iot: "Автономні річкові буї з датчиками pH та розчиненого O₂",
+            ai: "Нейромережа виявлення хімічного забруднення води",
+            smart: "Розумні шлюзи очисних споруд",
+            defaultAnswers: {
+              0: "Плаваючі IoT-буї з електрохімічними сенсорами (pH, кисень, нітрати) + ШІ-система раннього виявлення скидів.",
+              1: "Раптові хімічні викиди у водойми та замор риби через падіння рівня розчиненого кисню.",
+              2: "Датчики у воді фіксують різку зміну кислотності (pH) або мутності. ШІ розраховує швидкість течії та попереджає водоканали нижче за течією про необхідність посилити очищення."
+            }
+          }
+        ],
+        questions: [
+          {
+            title: "1. Технологія — Що досліджуємо?",
+            subtitle: "Опиши екологічні датчики та інформаційну систему на основі ШІ.",
+            options: [
+              "Мережа IoT-станцій моніторингу повітря (PM2.5, CO₂, NO₂) та ШІ-система прогнозування руху забруднених хмар.",
+              "Лісові акустичні датчики та фотопастки на сонячних батареях у поєднанні з ШІ для розпізнавання звуків і тварин.",
+              "Автономні водні IoT-буї з хімічними сенсорами (pH, O₂, температура) та нейромережею виявлення забруднень."
+            ]
+          },
+          {
+            title: "2. Проблема — Яку реальну проблему вона розв'язує?",
+            subtitle: "Яку загрозу для довкілля та здоров'я населення допомагає попередити?",
+            options: [
+              "Оперативно виявляє небезпечний смог і пожежі, захищаючи людей із астмою та серцево-судинними хворобами.",
+              "Зупиняє незаконну вирубку пралісів та допомагає вченим рахувати рідкісних тварин, не турбуючи їх.",
+              "Запобігає екологічним катастрофам у річках через промислові скиди та цвітіння синьо-зелених водоростей."
+            ]
+          },
+          {
+            title: "3. Як це працює? — Ланцюжок «Дані → ШІ → Дія»",
+            subtitle: "Поясни роботу системи зрозуміло для учнів 10 класу.",
+            options: [
+              "Лазерний сенсор рахує мікрочастинки пилу в повітрі → дані летять у хмару → ШІ будує карту забруднення району → надсилає пораду зачинити вікна.",
+              "Мікрофон на дереві записує звуки лісу → ШІ відрізняє шум вітру від звуку бензопили чи голосу рисі → передає координати на планшет лісника.",
+              "Хімічні електроди у річці вимірюють pH і кисень → ШІ помічає аномальне відхилення → вмикає аерацію води та сигналізує екоінспекції."
+            ]
+          },
+          {
+            title: "4. Реальний приклад — Хто і де це вже використовує?",
+            subtitle: "Наведи відомі проєкти в Україні та світі.",
+            options: [
+              "Український проєкт SaveEcoBot збирає дані з тисяч IoT-датчиків якості повітря по всій Україні в реальному часі.",
+              "Міжнародна система Rainforest Connection використовує старі смартфони з сонячними панелями та ШІ для захисту тропічних лісів від вирубки.",
+              "Проєкт Wildlife Insights (Google та WWF) використовує ШІ для автоматичного розпізнавання мільйонів фото диких тварин із фотопасток."
+            ]
+          },
+          {
+            title: "5. Вплив — Що стало можливим, швидшим, дешевшим, точнішим або безпечнішим?",
+            subtitle: "Які переваги дає поєднання ШІ та IoT в екології?",
+            options: [
+              "Стало швидшим і безпечнішим: виявлення пожежі чи викиду займає хвилини замість днів лабораторних аналізів.",
+              "Стало можливим охопити величезні важкодоступні території (ліси, гори, океани) без постійної присутності людей.",
+              "Стало прозорішим і точнішим: кожен громадянин бачить реальний стан повітря біля своєї школи чи дому."
+            ]
+          },
+          {
+            title: "6. Обмеження і ризики — Які проблеми створює технологія?",
+            subtitle: "З якими труднощами стикаються екологічні системи?",
+            options: [
+              "Необхідність регулярно калібрувати датчики, оскільки пил, волога чи водорості забруднюють сенсори.",
+              "Проблема живлення та передачі сигналу в глухих лісах, горах або під водою.",
+              "Утилізація акумуляторів та електроніки самих IoT-пристроїв після закінчення терміну служби."
+            ]
+          },
+          {
+            title: "7. Майбутнє — Як це рішення можна розвивати далі?",
+            subtitle: "Ідеї для розвитку екотехнологій.",
+            options: [
+              "Використання біорозкладних сенсорів, які після виконання місії безпечно розчиняються в ґрунті.",
+              "Поєднання наземних датчиків із супутниками ЄКА (Copernicus) для глобального контролю викидів парникових газів.",
+              "Підключення міських датчиків повітря напряму до розумних світлофорів, щоб перенаправляти трафік із загазованих вулиць."
+            ]
+          }
+        ]
+      },
+
+      /* ----------------------------------------------------------------------
+         СФЕРА 4: ХІМІЧНІ ДОСЛІДЖЕННЯ ТА ФАРМАЦЕВТИКА
+         ---------------------------------------------------------------------- */
+      {
+        id: "chemistry",
+        icon: "🧪",
+        name: "Хімія та фармацевтика",
+        shortDesc: "Пошук нових молекул ліків, розумний синтез і безпека в лабораторії",
+        accentBg: "#e0e7ff",
+        svg: {
+          objIcon: "⚛️", objTitle: "Молекули та реактиви", objSub: "Хімічний синтез / Склад",
+          iotIcon: "🔬", iotTitle: "Smart-реактор / Сенсор", iotSub: "Контроль pH, T°, тиску",
+          aiIcon: "🧬", aiTitle: "Молекулярний ШІ", aiSub: "Моделювання 3D-структур",
+          smartIcon: "💊", smartTitle: "Робот-дозатор / Синтез", smartSub: "Формула нових ліків"
+        },
+        iotOptions: [
+          "Smart-хімічний реактор із датчиками температури, pH і тиску",
+          "Розумна витяжна шафа з газоаналізаторами витоків",
+          "Автоматизований спектрометр із підключенням до хмари"
+        ],
+        aiOptions: [
+          "Генеративний ШІ для проєктування нових молекул ліків",
+          "Нейромережа прогнозування перебігу хімічної реакції",
+          "Алгоритм контролю якості та чистоти препаратів"
+        ],
+        smartOptions: [
+          "Роботизований маніпулятор-дозатор реактивів",
+          "Автоматична система блокування і вентиляції лабораторії",
+          "3D-візуалізатор білкових комплексів"
+        ],
+        presets: [
+          {
+            id: "chem_1",
+            tag: "Сценарій А • Фармацевтика",
+            title: "ШІ-пошук нових молекул ліків та білків",
+            iot: "Автоматизований спектрометр із підключенням до хмари",
+            ai: "Генеративний ШІ для проєктування нових молекул ліків",
+            smart: "Роботизований маніпулятор-дозатор реактивів",
+            defaultAnswers: {
+              0: "Генеративний ШІ для моделювання 3D-структури білків + роботизована платформа автоматичного хімічного скринінгу (IoT).",
+              1: "Розробка нових ліків традиційним методом перебору триває 10–15 років і коштує мільярди доларів.",
+              2: "ШІ на комп'ютері моделює мільйони варіантів молекул, обирає ті, що найкраще «приєднаються» до вірусу чи білка, а робот-лаборант автоматично синтезує й перевіряє найкращі кандидати."
+            }
+          },
+          {
+            id: "chem_2",
+            tag: "Сценарій Б • Лабораторна безпека",
+            title: "Smart-лабораторія та контроль токсичних газів",
+            iot: "Розумна витяжна шафа з газоаналізаторами витоків",
+            ai: "Нейромережа прогнозування перебігу хімічної реакції",
+            smart: "Автоматична система блокування і вентиляції лабораторії",
+            defaultAnswers: {
+              0: "IoT-газоаналізатори та оптичні датчики диму + ШІ-контролер безпеки + розумні витяжні шафи й клапани.",
+              1: "Ризик отруєння токсичними випарами, вибуху екзотермічних реакцій або витоку газів під час дослідів.",
+              2: "Сенсори безперервно аналізують склад повітря та температуру колб. Якщо ШІ фіксує перегрів або сліди небезпечного газу, він миттєво вмикає турбовентиляцію та перекриває подачу реагентів."
+            }
+          },
+          {
+            id: "chem_3",
+            tag: "Сценарій В • Хімічний синтез",
+            title: "Розумний хімічний реактор (Green Chemistry)",
+            iot: "Smart-хімічний реактор із датчиками температури, pH і тиску",
+            ai: "Алгоритм контролю якості та чистоти препаратів",
+            smart: "Роботизований маніпулятор-дозатор реактивів",
+            defaultAnswers: {
+              0: "Хімічний реактор із вбудованими pH- та спектро-сенсорами (IoT) + ШІ-оптимізатор умов реакції.",
+              1: "Утворення побічних токсичних відходів та низький вихід цільової речовини через неточні умови синтезу.",
+              2: "Датчики всередині реактора в реальному часі стежать за швидкістю реакції. ШІ сам підлаштовує температуру й швидкість додавання каталізатора, щоб отримати максимально чистий продукт без відходів."
+            }
+          }
+        ],
+        questions: [
+          {
+            title: "1. Технологія — Що досліджуємо?",
+            subtitle: "Поєднання хімічних сенсорів, роботів-лаборантів та ШІ.",
+            options: [
+              "Молекулярний ШІ (AlphaFold) у поєднанні з роботизованими платформами автоматичного хімічного синтезу.",
+              "Smart-лабораторія з IoT-датчиками температури, тиску, pH та газоаналізаторами під керуванням ШІ.",
+              "Автоматизований спектрометр із хмарною нейромережею для миттєвого визначення хімічного складу речовин."
+            ]
+          },
+          {
+            title: "2. Проблема — Яку реальну проблему вона розв'язує?",
+            subtitle: "Чому в сучасній хімії та фармацевтиці не обійтися без ШІ?",
+            options: [
+              "Скорочує пошук нових антибіотиків та ліків проти раку з десятків років до кількох місяців.",
+              "Захищає хіміків від небезпечних вибухів, витоків токсичних газів та людських помилок при змішуванні реактивів.",
+              "Зменшує кількість хімічних відходів («зелена хімія») завдяки точному підбору каталізаторів і температур."
+            ]
+          },
+          {
+            title: "3. Як це працює? — Ланцюжок «Дані → ШІ → Дія»",
+            subtitle: "Опиши процес від хімічної формули чи сенсора до результату.",
+            options: [
+              "ШІ аналізує 3D-форму білка-мішені → генерує формулу нової молекули ліків → передає завдання роботу-дозатору → робот синтезує зразок у пробірці.",
+              "Датчики у реакторі фіксують стрибок температури та тиску → ШІ розпізнає початок небезпечної реакції → автоматично охолоджує систему та вмикає витяжку.",
+              "Спектрометр просвічує зразок води чи ліків → ШІ порівнює спектр із базою з мільйона речовин → виводить точний склад домішок на екран."
+            ]
+          },
+          {
+            title: "4. Реальний приклад — Хто і де це вже використовує?",
+            subtitle: "Наведи приклади відомих хіміко-біологічних проривів.",
+            options: [
+              "Система AlphaFold (Google DeepMind) передбачила 3D-структуру понад 200 мільйонів білків, за що її творці отримали Нобелівську премію з хімії (2024).",
+              "Компанія Insilico Medicine створила перші ліки, повністю спроєктовані штучним інтелектом, які дійшли до клінічних випробувань.",
+              "Автономні «хмарні лабораторії» (Emerald Cloud Lab), де вчені керують реальними хімічними дослідами дистанційно через інтернет."
+            ]
+          },
+          {
+            title: "5. Вплив — Що стало можливим, швидшим, дешевшим, точнішим або безпечнішим?",
+            subtitle: "Оціни революційні зміни в хімії.",
+            options: [
+              "Стало в рази швидшим і дешевшим: віртуальне тестування мільйонів молекул замінює дорогі експерименти «в пробірці».",
+              "Стало безпечнішим: роботу з отруйними або вибухонебезпечними речовинами виконують роботи під контролем датчиків.",
+              "Стало можливим створювати принципово нові матеріали (наприклад, біопластики або ефективніші батареї)."
+            ]
+          },
+          {
+            title: "6. Обмеження і ризики — Які проблеми створює технологія?",
+            subtitle: "Які етичні та наукові ризики існують?",
+            options: [
+              "ШІ може запропонувати молекулу, яка чудово виглядає на екрані, але її неможливо синтезувати в реальній лабораторії.",
+              "Ризик біо- та хімічної небезпеки: зловмисники можуть спробувати використати ШІ для пошуку нових токсинів.",
+              "Кожна модель ШІ все одно потребує тривалої реальної перевірки на токсичність та побічні ефекти на живих клітинах."
+            ]
+          },
+          {
+            title: "7. Майбутнє — Як це рішення можна розвивати далі?",
+            subtitle: "Куди рухається розумна хімія?",
+            options: [
+              "Повністю автономні лабораторії, які самі висувають наукову гіпотезу, проводять дослід, аналізують результат і вдосконалюють формулу.",
+              "Поєднання ШІ з квантовими комп'ютерами для точного моделювання взаємодії електронів у складних хімічних реакціях.",
+              "Шкільні віртуально-реальні Smart-лабораторії, де учні можуть безпечно керувати роботом-хіміком зі свого класу."
+            ]
+          }
+        ]
+      },
+
+      /* ----------------------------------------------------------------------
+         СФЕРА 5: ЗДОРОВ'Я ЛЮДИНИ ТА БІОМЕТРІЯ
+         ---------------------------------------------------------------------- */
+      {
+        id: "biometrics",
+        icon: "🏃",
+        name: "Здоров'я та біометрія",
+        shortDesc: "Smart-годинники, контроль сну, пульсу, стресу та профілактика",
+        accentBg: "#fef3c7",
+        svg: {
+          objIcon: "💓", objTitle: "Фізіологія людини", objSub: "Пульс, сон, кисень SpO₂",
+          iotIcon: "⌚", iotTitle: "Smart-годинник / Кільце", iotSub: "Оптичні фотосенсори",
+          aiIcon: "🧠", aiTitle: "Біометричний ШІ", aiSub: "Оцінка стресу та сну",
+          smartIcon: "📱", smartTitle: "Smart-трекер здоров'я", smartSub: "Поради та попередження"
+        },
+        iotOptions: [
+          "Smart-годинник з оптичним пульсоксиметром (PPG + SpO₂)",
+          "Розумне кільце (Smart Ring) для аналізу фаз сну та температури",
+          "Розумна пляшка для води та трекер постави"
+        ],
+        aiOptions: [
+          "Алгоритм оцінки рівня стресу (за варіабельністю пульсу)",
+          "Нейромережа розпізнавання фаз сну та відновлення",
+          "ШІ-виявлення падіння людини та виклик допомоги"
+        ],
+        smartOptions: [
+          "Персональний тренер і щоденник здоров'я у смартфоні",
+          "Розумний будильник, що будить у легку фазу сну",
+          "Екстрений SOS-виклик довірених контактів"
+        ],
+        presets: [
+          {
+            id: "bio_1",
+            tag: "Сценарій А • Нейробіологія та сон",
+            title: "Розумний трекінг сну та відновлення",
+            iot: "Розумне кільце (Smart Ring) для аналізу фаз сну та температури",
+            ai: "Нейромережа розпізнавання фаз сну та відновлення",
+            smart: "Розумний будильник, що будить у легку фазу сну",
+            defaultAnswers: {
+              0: "Носимий біометричний датчик (Smart-кільце чи браслет) + ШІ-аналізатор фаз сну + розумний будильник.",
+              1: "Хронічне недосипання у підлітків і дорослих, важке пробудження та зниження концентрації уваги на уроках.",
+              2: "Сенсори вночі вимірюють частоту пульсу, температуру шкіри та мікрорухи. ШІ визначає фази глибокого і швидкого сну та подає сигнал будильника в момент, коли організм найлегше прокидається."
+            }
+          },
+          {
+            id: "bio_2",
+            tag: "Сценарій Б • Стрес і пульс",
+            title: "Контроль стресу та насичення крові киснем",
+            iot: "Smart-годинник з оптичним пульсоксиметром (PPG + SpO₂)",
+            ai: "Алгоритм оцінки рівня стресу (за варіабельністю пульсу)",
+            smart: "Персональний тренер і щоденник здоров'я у смартфоні",
+            defaultAnswers: {
+              0: "Оптичні фотоплетизмографічні датчики (IoT) у годиннику + ШІ-алгоритм аналізу варіабельності серцевого ритму.",
+              1: "Непомітне накопичення психоемоційного стресу та перевтоми, що послаблює імунітет.",
+              2: "Зелені та червоні світлодіоди просвічують капіляри на зап'ясті, вимірюючи пульс і рівень кисню (SpO₂). ШІ помічає напруження нервової системи та пропонує 2-хвилинну дихальну вправу."
+            }
+          },
+          {
+            id: "bio_3",
+            tag: "Сценарій В • Безпека літніх людей",
+            title: "Smart-браслет із детектором падіння",
+            iot: "Smart-годинник з оптичним пульсоксиметром (PPG + SpO₂)",
+            ai: "ШІ-виявлення падіння людини та виклик допомоги",
+            smart: "Екстрений SOS-виклик довірених контактів",
+            defaultAnswers: {
+              0: "Акселерометр і гіроскоп (IoT) у наручному годиннику + нейромережа розпізнавання різкого падіння + модуль SOS.",
+              1: "Ризик того, що літня людина або людина з хронічним захворюванням втратить свідомість удома і не зможе дотягнутися до телефону.",
+              2: "Датчики руху фіксують характерне прискорення при падінні та подальшу нерухомість. ШІ відрізняє падіння від звичайного стрибка чи змаху рукою і сам телефонує близьким із GPS-координатами."
+            }
+          }
+        ],
+        questions: [
+          {
+            title: "1. Технологія — Що досліджуємо?",
+            subtitle: "Які біометричні датчики та розумні алгоритми працюють разом?",
+            options: [
+              "Носимий IoT-гаджет (Smart-годинник або кільце) з оптичними датчиками пульсу, SpO₂ та нейромережею аналізу біоритмів.",
+              "Акселерометр і гіроскоп у браслеті + ШІ-алгоритм виявлення падінь та автоматичного екстреного виклику.",
+              "Біометричний трекер сну та температури тіла з інтелектуальним підбором режиму відпочинку й навантажень."
+            ]
+          },
+          {
+            title: "2. Проблема — Яку реальну проблему вона розв'язує?",
+            subtitle: "Як технологія допомагає піклуватися про власне здоров'я?",
+            options: [
+              "Допомагає виявити перші ознаки перевтоми, стресу або вірусної інфекції ще до появи високої температури.",
+              "Формує здорові звички: нагадує про рухову активність, питний режим та правильний режим сну.",
+              "Забезпечує безпеку літніх родичів або спортсменів завдяки автоматичному виявленню падінь і критичного пульсу."
+            ]
+          },
+          {
+            title: "3. Як це працює? — Ланцюжок «Дані → ШІ → Дія»",
+            subtitle: "Поясни фізико-біологічний принцип роботи зрозуміло для 10 класу.",
+            options: [
+              "Світлодіоди годинника просвічують кровоносні судини на зап'ясті → датчик фіксує пульсацію крові → ШІ обчислює пульс, SpO₂ і рівень стресу → виводить пораду на екран.",
+              "Інфрачервоний сенсор вимірює температуру шкіри вночі → ШІ порівнює її з індивідуальною нормою людини → попереджає про можливий початок застуди.",
+              "Гіроскоп фіксує різкий удар і падіння → ШІ перевіряє, чи рухається людина → якщо реакції немає 30 секунд, надсилає SOS-повідомлення."
+            ]
+          },
+          {
+            title: "4. Реальний приклад — Хто і де це вже використовує?",
+            subtitle: "Які пристрої та дослідження вже працюють у реальному житті?",
+            options: [
+              "Функція виявлення падіння та ЕКГ у годинниках Apple Watch, Samsung Galaxy Watch та Garmin врятувала тисячі життів.",
+              "Розумні кільця Oura Ring використовувалися в наукових дослідженнях для раннього виявлення симптомів COVID-19 за зміною температури шкіри.",
+              "Мільйони школярів і спортсменів використовують фітнес-браслети (Xiaomi, Fitbit) для контролю фізичної активності."
+            ]
+          },
+          {
+            title: "5. Вплив — Що стало можливим, швидшим, дешевшим, точнішим або безпечнішим?",
+            subtitle: "Як змінилася профілактика здоров'я?",
+            options: [
+              "Стало можливим стежити за роботою серця і якістю сну щодня без складного медичного обладнання.",
+              "Стало безпечнішим займатися спортом і жити самостійно літнім людям завдяки миттєвому SOS-оповіщенню.",
+              "Стало швидшим виявлення погіршення самопочуття, що мотивує вчасно звернутися до лікаря."
+            ]
+          },
+          {
+            title: "6. Обмеження і ризики — Які проблеми створює технологія?",
+            subtitle: "Про що важливо пам'ятати кожному користувачу фітнес-трекерів?",
+            options: [
+              "Smart-годинник не є медичним приладом: на точність впливають темний колір шкіри, татуювання, холод або слабке прилягання ремінця.",
+              "Ризик конфіденційності: біометричні дані (маршрути пробіжок, стан здоров'я) можуть потрапити до сторонніх компаній.",
+              "Психологічна тривожність («ортосомнія») — коли людина надмірно хвилюється через кожну цифру на екрані."
+            ]
+          },
+          {
+            title: "7. Майбутнє — Як це рішення можна розвивати далі?",
+            subtitle: "Якими стануть носимі біосенсори в майбутньому?",
+            options: [
+              "Розумний одяг («smart-тканина») із вплетеними біосенсорами, що контролюють поставу, дихання і роботу м'язів.",
+              "Безконтактне вимірювання артеріального тиску, рівня лактату та зневоднення через мікроаналіз поту.",
+              "Використання енергії тепла людського тіла, щоб біометричні датчики працювали без підзарядки."
+            ]
+          }
+        ]
+      }
+    ];
+
+    /* ==========================================================================
+       СТАН ДОДАТКУ (STATE)
+       ========================================================================== */
+    const state = {
+      activeDomainId: "medicine",
+      fastFlow: false,
+      // Зберігаємо стан окремо для кожної сфери, щоб можна було перемикатися без втрати прогресу
+      domainStates: {}
+    };
+
+    // Ініціалізуємо початковий стан для кожної сфери
+    DOMAINS_DATA.forEach(domain => {
+      const firstPreset = domain.presets[0];
+      state.domainStates[domain.id] = {
+        activePresetId: firstPreset.id,
+        iot: firstPreset.iot,
+        ai: firstPreset.ai,
+        smart: firstPreset.smart,
+        // Масив із 7 відповідей: { mode: 'choice' | 'custom', selectedIndex: number | null, customText: string }
+        answers: Array.from({ length: 7 }, () => ({
+          mode: "choice",
+          selectedIndex: null,
+          customText: ""
+        }))
+      };
+    });
+
+    /* ==========================================================================
+       ДОПОМІЖНІ ФУНКЦІЇ РОБОТИ З ДАНИМИ
+       ========================================================================== */
+    function getCurrentDomain() {
+      return DOMAINS_DATA.find(d => d.id === state.activeDomainId);
+    }
+
+    function getCurrentDomainState() {
+      return state.domainStates[state.activeDomainId];
+    }
+
+    function getAnswerText(domainState, qIndex, domain) {
+      const ans = domainState.answers[qIndex];
+      if (ans.mode === "custom") {
+        return ans.customText.trim();
+      }
+      if (ans.selectedIndex !== null && domain.questions[qIndex].options[ans.selectedIndex]) {
+        return domain.questions[qIndex].options[ans.selectedIndex];
+      }
+      return "";
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toastBox");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2800);
+    }
+
+    /* ==========================================================================
+       РЕНДЕРИНГ КРОКУ 1: КАРТКИ СФЕР ЗАСТОСУВАННЯ
+       ========================================================================== */
+    function renderDomains() {
+      const grid = document.getElementById("domainsGrid");
+      grid.innerHTML = "";
+
+      DOMAINS_DATA.forEach(domain => {
+        const dState = state.domainStates[domain.id];
+        const filledCount = dState.answers.reduce((acc, _, idx) => {
+          return acc + (getAnswerText(dState, idx, domain) ? 1 : 0);
+        }, 0);
+
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "domain-card" + (domain.id === state.activeDomainId ? " active" : "");
+        card.innerHTML = `
+          <div>
+            <div class="domain-icon-wrap" style="background: ${domain.accentBg};">
+              ${domain.icon}
+            </div>
+            <h3>${domain.name}</h3>
+            <p>${domain.shortDesc}</p>
+          </div>
+          <div class="domain-badge-count">
+            <span>📊 Прогрес: ${filledCount}/7</span>
+          </div>
+        `;
+        card.addEventListener("click", () => {
+          state.activeDomainId = domain.id;
+          renderAll();
+          showToast(`Обрано напрям: ${domain.icon} ${domain.name}`);
+        });
+        grid.appendChild(card);
+      });
+    }
+
+    /* ==========================================================================
+       ОНОВЛЕННЯ SVG-ІНФОГРАФІКИ
+       ========================================================================== */
+    function updateSVGDiagram() {
+      const domain = getCurrentDomain();
+      const dState = getCurrentDomainState();
+
+      document.getElementById("diagramMainTitle").textContent =
+        `Жива схема потоку даних: ${domain.icon} ${domain.name}`;
+
+      document.getElementById("svgNode1Icon").textContent = domain.svg.objIcon;
+      document.getElementById("svgNode1Title").textContent = domain.svg.objTitle;
+      document.getElementById("svgNode1Sub").textContent = domain.svg.objSub;
+
+      document.getElementById("svgNode2Icon").textContent = domain.svg.iotIcon;
+      document.getElementById("svgNode2Title").textContent = truncateText(dState.iot, 24);
+      document.getElementById("svgNode2Sub").textContent = domain.svg.iotSub;
+
+      document.getElementById("svgNode3Icon").textContent = domain.svg.aiIcon;
+      document.getElementById("svgNode3Title").textContent = truncateText(dState.ai, 24);
+      document.getElementById("svgNode3Sub").textContent = domain.svg.aiSub;
+
+      document.getElementById("svgNode4Icon").textContent = domain.svg.smartIcon;
+      document.getElementById("svgNode4Title").textContent = truncateText(dState.smart, 22);
+      document.getElementById("svgNode4Sub").textContent = domain.svg.smartSub;
+    }
+
+    function truncateText(str, maxLen) {
+      if (!str) return "";
+      return str.length > maxLen ? str.slice(0, maxLen - 1) + "…" : str;
+    }
+
+    /* ==========================================================================
+       РЕНДЕРИНГ КРОКУ 2: ПРЕСЕТИ ТА ВИБІР КОМПОНЕНТІВ
+       ========================================================================== */
+    function renderPresetsAndControls() {
+      const domain = getCurrentDomain();
+      const dState = getCurrentDomainState();
+      const presetsGrid = document.getElementById("presetsGrid");
+      presetsGrid.innerHTML = "";
+
+      domain.presets.forEach(preset => {
+        const isActive = dState.activePresetId === preset.id;
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "preset-card" + (isActive ? " active" : "");
+        card.innerHTML = `
+          <span class="preset-tag">${preset.tag}</span>
+          <h4>${preset.title}</h4>
+          <div class="preset-formula">
+            <span class="formula-chip">📡 ${truncateText(preset.iot, 22)}</span>
+            <span>+</span>
+            <span class="formula-chip">🧠 ${truncateText(preset.ai, 20)}</span>
+            <span>→</span>
+            <span class="formula-chip">⚡ ${truncateText(preset.smart, 20)}</span>
+          </div>
+        `;
+        card.addEventListener("click", () => {
+          dState.activePresetId = preset.id;
+          dState.iot = preset.iot;
+          dState.ai = preset.ai;
+          dState.smart = preset.smart;
+          renderPresetsAndControls();
+          updateSVGDiagram();
+          renderPassport();
+          showToast(`Застосовано сценарій: «${preset.title}»`);
+        });
+        presetsGrid.appendChild(card);
+      });
+
+      // Заповнюємо випадаючі списки компонентів
+      fillSelect("selectIoT", domain.iotOptions, dState.iot, val => {
+        dState.iot = val;
+        dState.activePresetId = "custom";
+        updateSVGDiagram();
+        renderPassport();
+      });
+
+      fillSelect("selectAI", domain.aiOptions, dState.ai, val => {
+        dState.ai = val;
+        dState.activePresetId = "custom";
+        updateSVGDiagram();
+        renderPassport();
+      });
+
+      fillSelect("selectSmart", domain.smartOptions, dState.smart, val => {
+        dState.smart = val;
+        dState.activePresetId = "custom";
+        updateSVGDiagram();
+        renderPassport();
+      });
+    }
+
+    function fillSelect(elementId, options, selectedVal, onChange) {
+      const select = document.getElementById(elementId);
+      select.innerHTML = "";
+      options.forEach(opt => {
+        const el = document.createElement("option");
+        el.value = opt;
+        el.textContent = opt;
+        if (opt === selectedVal) el.selected = true;
+        select.appendChild(el);
+      });
+      select.onchange = e => onChange(e.target.value);
+    }
+
+    /* ==========================================================================
+       РЕНДЕРИНГ КРОКУ 3: 7 ДОСЛІДНИЦЬКИХ ПИТАНЬ
+       ========================================================================== */
+    function renderQuestions() {
+      const domain = getCurrentDomain();
+      const dState = getCurrentDomainState();
+      const list = document.getElementById("questionsList");
+      list.innerHTML = "";
+
+      domain.questions.forEach((q, qIdx) => {
+        const ansState = dState.answers[qIdx];
+        const currentAnswer = getAnswerText(dState, qIdx, domain);
+
+        const card = document.createElement("article");
+        card.className = "question-card" + (currentAnswer ? " answered" : "");
+        card.id = `question-card-${qIdx}`;
+
+        // Заголовок питання + перемикач режимів
+        const header = document.createElement("div");
+        header.className = "question-header";
+        header.innerHTML = `
+          <div class="q-title-box">
+            <div class="q-number">${currentAnswer ? "✓" : qIdx + 1}</div>
+            <div>
+              <h3>${q.title}</h3>
+              <p>${q.subtitle}</p>
+            </div>
+          </div>
+          <div class="mode-switcher" role="group" aria-label="Режим відповіді">
+            <button type="button" class="mode-btn ${ansState.mode === "choice" ? "active" : ""}" data-mode="choice">
+              💡 Підказки
+            </button>
+            <button type="button" class="mode-btn ${ansState.mode === "custom" ? "active" : ""}" data-mode="custom">
+              ✍️ Вписати своє
+            </button>
+          </div>
+        `;
+
+        // Обробники перемикача режиму
+        header.querySelectorAll(".mode-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const newMode = btn.dataset.mode;
+            if (ansState.mode !== newMode) {
+              // Якщо перемикаємося у власний текст і там порожньо, копіюємо обрану підказку для зручного редагування
+              if (newMode === "custom" && !ansState.customText && ansState.selectedIndex !== null) {
+                ansState.customText = q.options[ansState.selectedIndex];
+              }
+              ansState.mode = newMode;
+              renderQuestions();
+              renderPassport();
+              renderDomains();
+            }
+          });
+        });
+
+        card.appendChild(header);
+
+        // Блок 1: Варіанти для вибору (клікабельні картки)
+        const optionsDiv = document.createElement("div");
+        optionsDiv.className = "options-grid";
+        optionsDiv.style.display = ansState.mode === "choice" ? "grid" : "none";
+
+        q.options.forEach((optText, optIdx) => {
+          const isSelected = ansState.selectedIndex === optIdx;
+          const optBtn = document.createElement("button");
+          optBtn.type = "button";
+          optBtn.className = "option-item" + (isSelected ? " selected" : "");
+          optBtn.innerHTML = `
+            <span class="option-radio" aria-hidden="true"></span>
+            <span>${optText}</span>
+          `;
+          optBtn.addEventListener("click", () => {
+            // Дозволяємо змінити або зняти вибір
+            ansState.selectedIndex = isSelected ? null : optIdx;
+            renderQuestions();
+            renderPassport();
+            renderDomains();
+          });
+          optionsDiv.appendChild(optBtn);
+        });
+        card.appendChild(optionsDiv);
+
+        // Блок 2: Поле для самостійного вписування тексту
+        const customWrap = document.createElement("div");
+        customWrap.className = "custom-textarea-wrap" + (ansState.mode === "custom" ? " visible" : "");
+        customWrap.innerHTML = `
+          <textarea class="custom-textarea" placeholder="Сформулюй власну думку або приклад для захисту проєкту...">${ansState.customText}</textarea>
+          <div class="textarea-hint">
+            <span>Власні змістовні відповіді підвищують оцінку до високого рівня (10–12 балів)</span>
+            <span>${ansState.customText.length} симв.</span>
+          </div>
+        `;
+
+        const textarea = customWrap.querySelector("textarea");
+        const charCounter = customWrap.querySelector(".textarea-hint span:last-child");
+        textarea.addEventListener("input", e => {
+          ansState.customText = e.target.value;
+          charCounter.textContent = `${ansState.customText.length} симв.`;
+
+          // Оновлюємо статус картки без повної перемальовки textarea (щоб не втрачався фокус)
+          const hasText = ansState.customText.trim().length > 0;
+          card.classList.toggle("answered", hasText);
+          card.querySelector(".q-number").textContent = hasText ? "✓" : qIdx + 1;
+
+          renderPassport();
+          renderDomains();
+        });
+
+        card.appendChild(customWrap);
+        list.appendChild(card);
+      });
+    }
+
+    /* ==========================================================================
+       АВТОМАТИЧНЕ ОЦІНЮВАННЯ ЗА РІВНЯМИ ІНФОРМАТИЧНОЇ ОСВІТНЬОЇ ГАЛУЗІ НУШ
+       ========================================================================== */
+    function evaluateStudentWork(domain, dState) {
+      let answeredCount = 0;
+      let meaningfulCustomCount = 0;
+      let analyticalCustomCount = 0; // Пункти 4, 5, 6, 7 (індекси 3, 4, 5, 6)
+      let totalCustomWords = 0;
+
+      domain.questions.forEach((q, idx) => {
+        const ans = dState.answers[idx];
+        const text = getAnswerText(dState, idx, domain);
+        if (text) {
+          answeredCount++;
+          if (ans.mode === "custom") {
+            const words = text.split(/\s+/).filter(Boolean);
+            const isIdenticalToPreset = q.options.some(opt => opt.trim().toLowerCase() === text.toLowerCase());
+            // Вважаємо відповідь власною та змістовною, якщо вона не просто скопійована без змін із підказки і містить щонайменше 3 слова / 18 символів
+            if (!isIdenticalToPreset && words.length >= 3 && text.length >= 18) {
+              meaningfulCustomCount++;
+              totalCustomWords += words.length;
+              if (idx >= 3) {
+                analyticalCustomCount++;
+              }
+            }
+          }
+        }
+      });
+
+      if (answeredCount === 0) {
+        return {
+          levelName: "Не оцінено",
+          badgeClass: "level-none",
+          points: 0,
+          answeredCount: 0,
+          meaningfulCustomCount: 0,
+          explanation: "Обери варіанти відповідей або сформулюй власні думки у блоках ліворуч, щоб отримати автоматичну оцінку."
+        };
+      }
+
+      let levelName = "";
+      let badgeClass = "";
+      let points = 1;
+      let explanation = "";
+
+      if (answeredCount <= 3) {
+        // ПОЧАТКОВИЙ РІВЕНЬ (1–3 бали)
+        levelName = "Початковий рівень";
+        badgeClass = "level-initial";
+        points = answeredCount; // 1, 2 або 3 бали
+        if (meaningfulCustomCount >= 1 && points < 3) points++;
+        explanation = `Заповнено ${answeredCount} із 7 пунктів. Сформовано базове уявлення про компоненти системи. Для переходу на середній рівень (4–6 балів) заповни щонайменше 4–5 дослідницьких блоків.`;
+      } else if (answeredCount <= 5) {
+        // СЕРЕДНІЙ РІВЕНЬ (4–6 балів)
+        levelName = "Середній рівень";
+        badgeClass = "level-intermediate";
+        points = answeredCount === 4 ? 4 : 5;
+        if (meaningfulCustomCount >= 1) points = 6;
+        explanation = `Заповнено ${answeredCount} із 7 пунктів. Ти розпізнаєш зв'язок між сенсорами IoT та аналізом ШІ. Заповни 6–7 пунктів (особливо ризики та майбутнє), щоб досягти достатнього рівня (7–9 балів).`;
+      } else if (answeredCount >= 6 && (answeredCount < 7 || meaningfulCustomCount < 3)) {
+        // ДОСТАТНІЙ РІВЕНЬ (7–9 балів)
+        levelName = "Достатній рівень";
+        badgeClass = "level-sufficient";
+        if (answeredCount === 6) {
+          points = meaningfulCustomCount >= 1 ? 8 : 7;
+        } else {
+          // Усі 7 пунктів заповнено, але власних змістовних відповідей 0, 1 або 2
+          if (meaningfulCustomCount === 0) points = 8;
+          else if (meaningfulCustomCount === 1) points = 9;
+          else points = 9;
+        }
+        const needed = Math.max(0, 3 - meaningfulCustomCount);
+        explanation = answeredCount < 7
+          ? `Заповнено 6 із 7 пунктів — цілісне розуміння системи. Дозаповни 7-й пункт і додай власні відповіді у режимі «Вписати своє» (зараз власних: ${meaningfulCustomCount}), щоб вийти на високий рівень (10–12 балів).`
+          : `Усі 7 пунктів заповнено логічно! Власних розгорнутих відповідей: ${meaningfulCustomCount}. Щоб досягти високого рівня (10–12 балів), перемкни ще ${needed} ${needed === 1 ? "блок" : "блоки"} у режим «Вписати своє» та сформулюй власні висновки.`;
+      } else {
+        // ВИСОКИЙ РІВЕНЬ (10–12 балів): answeredCount === 7 && meaningfulCustomCount >= 3
+        levelName = "Високий рівень";
+        badgeClass = "level-high";
+        if (meaningfulCustomCount >= 5 && analyticalCustomCount >= 3 && totalCustomWords >= 35) {
+          points = 12;
+        } else if (meaningfulCustomCount >= 4 && analyticalCustomCount >= 2) {
+          points = 11;
+        } else {
+          points = 10;
+        }
+        explanation = `Відмінний результат! Усі 7 пунктів виконано, надано ${meaningfulCustomCount} змістовних власних відповідей у режимі «Вписати своє». Продемонстровано критичне мислення та глибоке розуміння IoT, ШІ і Smart-технологій.`;
+      }
+
+      return {
+        levelName,
+        badgeClass,
+        points,
+        answeredCount,
+        meaningfulCustomCount,
+        explanation
+      };
+    }
+
+    /* ==========================================================================
+       РЕНДЕРИНГ КРОКУ 4: ПІДСУМКОВА КАРТКА-ПАСПОРТ ПРОЄКТУ
+       ========================================================================== */
+    const SHORT_LABELS = [
+      "1. Технологія",
+      "2. Проблема",
+      "3. Як це працює?",
+      "4. Реальний приклад",
+      "5. Вплив",
+      "6. Обмеження і ризики",
+      "7. Майбутнє"
+    ];
+
+    function renderPassport() {
+      const domain = getCurrentDomain();
+      const dState = getCurrentDomainState();
+
+      document.getElementById("passportDomainTitle").textContent = `${domain.icon} ${domain.name}`;
+
+      const activePreset = domain.presets.find(p => p.id === dState.activePresetId);
+      document.getElementById("passportPresetMeta").textContent =
+        `🔗 ${activePreset ? activePreset.tag : "Власна комбінація"}`;
+
+      document.getElementById("triadIoT").textContent = truncateText(dState.iot, 28);
+      document.getElementById("triadAI").textContent = truncateText(dState.ai, 28);
+      document.getElementById("triadSmart").textContent = truncateText(dState.smart, 28);
+
+      const passportBody = document.getElementById("passportBody");
+      passportBody.innerHTML = "";
+
+      let filledCount = 0;
+
+      domain.questions.forEach((q, idx) => {
+        const text = getAnswerText(dState, idx, domain);
+        if (text) filledCount++;
+
+        const row = document.createElement("div");
+        row.className = "passport-row" + (text ? " filled" : "");
+        row.title = "Натисни, щоб перейти до редагування цього пункту";
+        row.innerHTML = `
+          <div class="passport-row-head">
+            <span class="passport-row-title">${text ? "✅" : "⭕"} ${SHORT_LABELS[idx]}</span>
+            <span class="edit-mini-link">✏️ Змінити</span>
+          </div>
+          <div class="passport-row-text ${text ? "" : "empty"}">
+            ${text || "Відповідь ще не обрано — натисни, щоб заповнити"}
+          </div>
+        `;
+        row.addEventListener("click", () => {
+          const targetCard = document.getElementById(`question-card-${idx}`);
+          if (targetCard) {
+            targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
+            targetCard.style.boxShadow = "0 0 0 4px rgba(79, 70, 229, 0.25)";
+            setTimeout(() => {
+              targetCard.style.boxShadow = "";
+            }, 1200);
+          }
+        });
+        passportBody.appendChild(row);
+      });
+
+      // Оновлюємо прогрес-бар у шапці та статус паспорта
+      document.getElementById("progressCount").textContent = filledCount;
+      document.getElementById("progressFill").style.width = `${Math.round((filledCount / 7) * 100)}%`;
+
+      const statusBadge = document.getElementById("passportBadgeStatus");
+      if (filledCount === 7) {
+        statusBadge.textContent = "Готово до захисту ★";
+        statusBadge.style.background = "#fbbf24";
+        statusBadge.style.color = "#451a03";
+        statusBadge.style.padding = "0.15rem 0.5rem";
+        statusBadge.style.borderRadius = "999px";
+      } else {
+        statusBadge.textContent = `Заповнено ${filledCount}/7`;
+        statusBadge.style.background = "transparent";
+        statusBadge.style.color = "#fff";
+        statusBadge.style.padding = "0";
+      }
+
+      // Оновлюємо блок автоматичного оцінювання за рівнями НУШ
+      const evalResult = evaluateStudentWork(domain, dState);
+      const levelBadge = document.getElementById("gradeLevelBadge");
+      levelBadge.textContent = evalResult.levelName;
+      levelBadge.className = `level-badge ${evalResult.badgeClass}`;
+
+      document.getElementById("gradePointsDisplay").innerHTML = `${evalResult.points} <span>/ 12 балів</span>`;
+      document.getElementById("gradeExplanation").textContent = evalResult.explanation;
+      document.getElementById("statAnswered").textContent = `Заповнено пунктів: ${evalResult.answeredCount}/7`;
+      document.getElementById("statCustom").textContent = `Власних відповідей: ${evalResult.meaningfulCustomCount}`;
+    }
+
+    /* ==========================================================================
+       ПЕРЕВІРКА ЛОГІКИ КОМБІНАЦІЇ (ЕКСПЕРТНИЙ ПОМІЧНИК)
+       ========================================================================== */
+    function checkProjectLogic() {
+      const domain = getCurrentDomain();
+      const dState = getCurrentDomainState();
+      const answers = domain.questions.map((_, i) => getAnswerText(dState, i, domain));
+      const evalResult = evaluateStudentWork(domain, dState);
+
+      const scoreBox = document.getElementById("feedbackScoreBox");
+      const list = document.getElementById("feedbackDetailsList");
+      list.innerHTML = "";
+
+      scoreBox.innerHTML = `
+        <strong>🎓 ${evalResult.levelName}: ${evalResult.points} / 12 балів</strong>
+        <span>${evalResult.explanation}</span>
+      `;
+
+      // Перевірка 1: Повнота
+      const missing = [];
+      answers.forEach((a, i) => {
+        if (!a) missing.push(SHORT_LABELS[i]);
+      });
+
+      if (missing.length === 0) {
+        addFeedbackItem("✅", "Усі 7 структурних елементів дослідження (від технології до майбутнього розвитку) розкрито.");
+      } else {
+        addFeedbackItem("⚠️", `Залишилося додати відповіді у розділах: <b>${missing.join(", ")}</b>.`);
+      }
+
+      // Перевірка 2: Зв'язка IoT -> ШІ -> Smart
+      addFeedbackItem(
+        "🔗",
+        `Архітектура системи коректна: <b>${dState.iot}</b> збирає дані → <b>${dState.ai}</b> їх аналізує → <b>${dState.smart}</b> виконує дію.`
+      );
+
+      // Перевірка 3: Самостійність мислення (власні відповіді)
+      if (evalResult.meaningfulCustomCount >= 3) {
+        addFeedbackItem("🌟", `Самостійність мислення: надано <b>${evalResult.meaningfulCustomCount}</b> власних розгорнутих відповідей — це відповідає критеріям високого рівня.`);
+      } else {
+        addFeedbackItem("✍️", `Порада для високого рівня (10–12 балів): використай кнопку <b>«Вписати своє»</b> щонайменше у 3 пунктах (зараз: ${evalResult.meaningfulCustomCount}), щоб висловити власну аргументацію.`);
+      }
+
+      // Перевірка 4: Критичне мислення (ризики та обмеження)
+      if (answers[5]) {
+        addFeedbackItem("🛡️", "Критичне мислення враховано: проаналізовано не лише переваги, а й ризики та обмеження технології.");
+      } else {
+        addFeedbackItem("💡", "У пункті 6 варто вказати ризики (приватність біоданих, вартість чи технічні збої) — це важливо для оцінювання в НУШ.");
+      }
+
+      document.getElementById("feedbackModal").classList.add("open");
+    }
+
+    function addFeedbackItem(icon, htmlText) {
+      const li = document.createElement("li");
+      li.innerHTML = `<span style="font-size:1.1rem;">${icon}</span><span>${htmlText}</span>`;
+      document.getElementById("feedbackDetailsList").appendChild(li);
+    }
+
+    /* ==========================================================================
+       КОПІЮВАННЯ ЗВІТУ ДЛЯ ВЧИТЕЛЯ (GOOGLE CLASSROOM / ЧАТ)
+       ========================================================================== */
+    function copyReportToClipboard() {
+      const domain = getCurrentDomain();
+      const dState = getCurrentDomainState();
+      const evalResult = evaluateStudentWork(domain, dState);
+
+      const lines = [
+        `🧬 ПАСПОРТ ТЕХНОЛОГІЧНОГО РІШЕННЯ (10 клас НУШ, хіміко-біологічний профіль)`,
+        `Сфера застосування: ${domain.icon} ${domain.name}`,
+        `Комбінація: [IoT] ${dState.iot} + [ШІ] ${dState.ai} → [Smart] ${dState.smart}`,
+        `🎓 Оцінювання (Інформатична галузь НУШ): ${evalResult.levelName} — ${evalResult.points}/12 балів (заповнено: ${evalResult.answeredCount}/7, власних відповідей: ${evalResult.meaningfulCustomCount})`,
+        `--------------------------------------------------`
+      ];
+
+      domain.questions.forEach((q, idx) => {
+        const ans = getAnswerText(dState, idx, domain) || "(не заповнено)";
+        const modeTag = dState.answers[idx].mode === "custom" && ans !== "(не заповнено)" ? " [власна відповідь]" : "";
+        lines.push(`${SHORT_LABELS[idx]}${modeTag}: ${ans}`);
+      });
+
+      const fullText = lines.join("\n");
+
+      // Використовуємо надійний метод через тимчасове поле та execCommand('copy')
+      const tempArea = document.createElement("textarea");
+      tempArea.value = fullText;
+      tempArea.style.position = "fixed";
+      tempArea.style.left = "-9999px";
+      document.body.appendChild(tempArea);
+      tempArea.select();
+
+      try {
+        document.execCommand("copy");
+        showToast(`📋 Звіт скопійовано! Оцінка: ${evalResult.points}/12 (${evalResult.levelName})`);
+      } catch (err) {
+        showToast("⚠️ Не вдалося скопіювати автоматично. Спробуй Друк / PDF.");
+      } finally {
+        document.body.removeChild(tempArea);
+      }
+    }
+
+    /* ==========================================================================
+       ОЧИЩЕННЯ ВІДПОВІДЕЙ ПОТОЧНОЇ СФЕРИ
+       ========================================================================== */
+    function clearCurrentDomainAnswers() {
+      const dState = getCurrentDomainState();
+      dState.answers = Array.from({ length: 7 }, () => ({
+        mode: "choice",
+        selectedIndex: null,
+        customText: ""
+      }));
+      renderAll();
+      showToast("🔄 Відповіді для цієї сфери очищено.");
+    }
+
+    /* ==========================================================================
+       ЗАГАЛЬНА ФУНКЦІЯ ПЕРЕМАЛЬОВКИ ТА ІНІЦІАЛІЗАЦІЯ ПОДІЙ
+       ========================================================================== */
+    function renderAll() {
+      renderDomains();
+      updateSVGDiagram();
+      renderPresetsAndControls();
+      renderQuestions();
+      renderPassport();
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      renderAll();
+
+      // Кнопка прискорення потоку даних в інфографіці
+      const btnSpeed = document.getElementById("btnToggleSpeed");
+      btnSpeed.addEventListener("click", () => {
+        state.fastFlow = !state.fastFlow;
+        ["flowLine1", "flowLine2", "flowLine3"].forEach(id => {
+          const line = document.getElementById(id);
+          line.classList.toggle("data-stream-fast", state.fastFlow);
+        });
+        btnSpeed.textContent = state.fastFlow ? "🐢 Звичайна швидкість" : "⚡ Прискорити потік даних";
+      });
+
+      // Кнопки дій
+      document.getElementById("btnCheckLogic").addEventListener("click", checkProjectLogic);
+      document.getElementById("btnCopyReport").addEventListener("click", copyReportToClipboard);
+      document.getElementById("btnPrintReport").addEventListener("click", () => window.print());
+
+      document.getElementById("btnClearAnswers").addEventListener("click", clearCurrentDomainAnswers);
+
+      // Модальне вікно експертної перевірки
+      const modal = document.getElementById("feedbackModal");
+      document.getElementById("btnCloseModal").addEventListener("click", () => modal.classList.remove("open"));
+      document.getElementById("btnModalOk").addEventListener("click", () => modal.classList.remove("open"));
+      modal.addEventListener("click", e => {
+        if (e.target === modal) modal.classList.remove("open");
+      });
+
+      // Модальне вікно критеріїв оцінювання НУШ
+      const criteriaModal = document.getElementById("criteriaModal");
+      document.getElementById("btnShowCriteria").addEventListener("click", () => criteriaModal.classList.add("open"));
+      document.getElementById("btnCloseCriteria").addEventListener("click", () => criteriaModal.classList.remove("open"));
+      document.getElementById("btnCriteriaOk").addEventListener("click", () => criteriaModal.classList.remove("open"));
+      criteriaModal.addEventListener("click", e => {
+        if (e.target === criteriaModal) criteriaModal.classList.remove("open");
+      });
+    });
+  </script>
+</body>
+</html>
