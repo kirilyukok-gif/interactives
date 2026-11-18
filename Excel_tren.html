@@ -1,0 +1,2428 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Формули та функції: цифрова лабораторія (10 клас)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        .font-mono-code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom Scrollbar for Spreadsheet */
+        .sheet-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .sheet-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .sheet-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .sheet-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Spreadsheet Grid Styling */
+        .cell-selected {
+            outline: 2px solid #2563eb;
+            outline-offset: -2px;
+            background-color: #eff6ff !important;
+            z-index: 10;
+        }
+        .cell-target-highlight {
+            box-shadow: inset 0 0 0 2px #f59e0b;
+        }
+        .cell-error-highlight {
+            box-shadow: inset 0 0 0 2px #ef4444;
+            background-color: #fef2f2 !important;
+        }
+        .cell-success-highlight {
+            box-shadow: inset 0 0 0 2px #10b981;
+            background-color: #ecfdf5 !important;
+        }
+        .fill-handle {
+            position: absolute;
+            right: -4px;
+            bottom: -4px;
+            width: 8px;
+            height: 8px;
+            background-color: #2563eb;
+            border: 1px solid white;
+            cursor: crosshair;
+            z-index: 20;
+        }
+        .cell-drag-over {
+            background-color: #dbeafe !important;
+            border: 1px dashed #2563eb !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="app.showHome()">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-xl shadow-sm">
+                    ƒx
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 text-base sm:text-lg leading-tight">Формули та функції</h1>
+                    <p class="text-xs text-slate-500 hidden sm:block">Цифрова лабораторія • Інформатика 10 клас</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-4">
+                <!-- Mode Indicator Badge -->
+                <div id="header-mode-badge" class="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span id="header-mode-text">Головне меню</span>
+                </div>
+
+                <!-- Score & Progress -->
+                <div class="flex items-center gap-3 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+                    <div class="text-right">
+                        <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Бали</div>
+                        <div id="header-score" class="text-sm font-bold text-blue-600">0</div>
+                    </div>
+                    <div class="h-6 w-px bg-slate-200"></div>
+                    <div class="text-right">
+                        <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Прогрес</div>
+                        <div id="header-progress" class="text-sm font-bold text-emerald-600">0%</div>
+                    </div>
+                </div>
+
+                <!-- Report & Home Buttons -->
+                <button onclick="app.showReport()" class="p-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Підсумковий звіт">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                </button>
+                <button onclick="app.showHome()" class="px-3 py-1.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition">
+                    Меню
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- VIEW 1: HOME / DASHBOARD -->
+        <section id="view-home" class="space-y-8">
+            <!-- Hero Banner -->
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                <div class="space-y-3 max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">
+                        <span>Інтерактивний тренажер електронних таблиць</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Формули та функції: цифрова лабораторія</h2>
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                        Опануйте роботу з електронними таблицями на практиці. Вводьте формули, використовуйте логічні та статистичні функції, працюйте з відносними й абсолютними посиланнями, шукайте помилки та експериментуйте з живими даними.
+                    </p>
+                </div>
+
+                <!-- Mode Selector -->
+                <div class="w-full lg:w-auto bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                    <div class="text-xs font-semibold uppercase tracking-wider text-slate-500">Режим проходження рівнів:</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btn-mode-learn" onclick="app.setPracticeMode('learn')" class="px-4 py-2.5 rounded-lg text-sm font-semibold transition flex flex-col items-center text-center border-2 border-blue-600 bg-blue-600 text-white shadow-sm">
+                            <span>Навчання</span>
+                            <span class="text-[11px] font-normal opacity-90">З підказками та теорією</span>
+                        </button>
+                        <button id="btn-mode-exam" onclick="app.setPracticeMode('exam')" class="px-4 py-2.5 rounded-lg text-sm font-semibold transition flex flex-col items-center text-center border-2 border-slate-200 bg-white text-slate-700 hover:border-slate-300">
+                            <span>Самостійна практика</span>
+                            <span class="text-[11px] font-normal text-slate-500">Без підказок, на оцінку</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5 Main Levels -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-slate-900">Навчальні рівні (1–5)</h3>
+                    <span class="text-xs text-slate-500">Оберіть рівень для початку роботи</span>
+                </div>
+                <div id="levels-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- 3 Additional Modes -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-slate-900">Додаткові режими лабораторії</h3>
+                    <span class="text-xs text-slate-500">Спеціальні тренування та вільна пісочниця</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Mode 1: Find the Bug -->
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-amber-400 transition flex flex-col justify-between">
+                        <div>
+                            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold mb-3">
+                                🔍
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-base mb-1">1. «Знайди помилку»</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                У таблицях приховані типові помилки: відсутній знак «=», неправильна адреса, діапазон, роздільник чи назва функції. Знайдіть, поясніть причину та виправте формулу!
+                            </p>
+                        </div>
+                        <button onclick="app.startExtraMode('debug')" class="w-full py-2.5 px-4 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl text-sm transition shadow-sm">
+                            Почати пошук помилок
+                        </button>
+                    </div>
+
+                    <!-- Mode 2: Experiment Sandbox -->
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-purple-400 transition flex flex-col justify-between">
+                        <div>
+                            <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold mb-3">
+                                🧪
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-base mb-1">2. «Експеримент»</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                Вільне середовище для досліджень. Змінюйте будь-які дані, тестуйте формули, копіюйте автозаповненням. Доступні готові набори: Покупки, Успішність, Бюджет, Опитування.
+                            </p>
+                        </div>
+                        <button onclick="app.startExtraMode('sandbox')" class="w-full py-2.5 px-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl text-sm transition shadow-sm">
+                            Відкрити лабораторію
+                        </button>
+                    </div>
+
+                    <!-- Mode 3: No Hints Challenge -->
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-rose-400 transition flex flex-col justify-between">
+                        <div>
+                            <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold mb-3">
+                                🎯
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-base mb-1">3. «Без підказок»</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                Контрольний бліц-практикум із 5 комплексних задач без підказок. Після завершення ви отримаєте детальний аналіз результатів та рекомендації.
+                            </p>
+                        </div>
+                        <button onclick="app.startExtraMode('challenge')" class="w-full py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl text-sm transition shadow-sm">
+                            Пройти випробування
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Controls (Reset Progress / Legend) -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex flex-wrap items-center gap-4 text-xs text-slate-600">
+                    <span class="font-semibold text-slate-800">Позначення в таблиці:</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-slate-100 border border-slate-300"></span> Вхідні дані</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-blue-50 border border-blue-300"></span> Формула (результат)</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-50 border border-amber-400"></span> Цільова комірка завдання</span>
+                </div>
+                <button onclick="app.confirmResetProgress()" class="text-xs text-rose-600 hover:text-rose-700 font-medium underline">
+                    Скинути весь збережений прогрес
+                </button>
+            </div>
+        </section>
+
+        <!-- VIEW 2: WORKSPACE (SPREADSHEET + TASK PANEL) -->
+        <section id="view-workspace" class="hidden space-y-4">
+            <!-- Top Workspace Sub-header -->
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <button onclick="app.showHome()" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600 transition" title="Назад до меню">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    </button>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="ws-badge" class="px-2 py-0.5 text-[11px] font-bold rounded bg-blue-100 text-blue-700">Рівень 1</span>
+                            <h2 id="ws-title" class="font-bold text-slate-900 text-sm sm:text-base">Назва завдання</h2>
+                        </div>
+                        <p id="ws-subtitle" class="text-xs text-slate-500">Підзаголовок завдання</p>
+                    </div>
+                </div>
+
+                <!-- Sandbox Dataset Switcher (Visible only in Sandbox mode) -->
+                <div id="sandbox-controls" class="hidden flex flex-wrap items-center gap-2">
+                    <span class="text-xs font-medium text-slate-600">Набір даних:</span>
+                    <select id="sandbox-dataset-select" onchange="app.loadSandboxDataset(this.value)" class="text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 font-medium text-slate-800 focus:outline-none focus:border-blue-500">
+                        <option value="shopping">🛒 Покупки в супермаркеті</option>
+                        <option value="grades">📊 Успішність 10-А класу</option>
+                        <option value="budget">💰 Бюджет класного заходу</option>
+                        <option value="survey">📋 Опитування учнів</option>
+                        <option value="empty">📄 Порожня таблиця</option>
+                    </select>
+                </div>
+
+                <!-- Step Indicator (For multi-task levels) -->
+                <div id="ws-steps-indicator" class="flex items-center gap-1.5">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Main Workspace Layout: Task Instructions Above, Spreadsheet & Controls Below -->
+            <div class="space-y-4">
+
+                <!-- TOP: Task Condition & Instructions Banner (Always above the table) -->
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold uppercase tracking-wider text-blue-600">📋 Умова завдання</span>
+                            <div id="task-targets-box" class="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-0.5 text-xs text-amber-900">
+                                <span class="font-medium">Комірки:</span>
+                                <span id="task-target-list" class="font-mono-code font-bold">D2:D6</span>
+                            </div>
+                        </div>
+                        <span id="task-points-badge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">+10 балів</span>
+                    </div>
+
+                    <div id="task-instruction" class="text-sm text-slate-800 leading-relaxed space-y-1.5">
+                        <!-- Dynamic instruction -->
+                    </div>
+
+                    <!-- Debug Mode Specific Explanation Input -->
+                    <div id="debug-reason-box" class="hidden pt-2.5 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">1. Оберіть тип знайденої помилки:</label>
+                            <select id="debug-error-type" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:outline-none focus:border-blue-500">
+                                <option value="">-- Оберіть причину помилки --</option>
+                                <option value="missing_eq">Відсутній знак «=» на початку формули</option>
+                                <option value="wrong_ref">Неправильна адреса комірки (посилання)</option>
+                                <option value="wrong_range">Неправильно вказаний діапазон комірок</option>
+                                <option value="wrong_func">Помилка в назві функції</option>
+                                <option value="wrong_sep">Неправильний роздільник аргументів або діапазону</option>
+                                <option value="wrong_op">Неправильний оператор порівняння чи арифметична дія</option>
+                            </select>
+                        </div>
+                        <p class="text-xs text-slate-600 bg-amber-50/70 border border-amber-200/80 rounded-xl p-2.5">
+                            <b>2. Виправлення:</b> Клікніть на комірку з помилкою у таблиці нижче, виправте формулу в рядку формул та натисніть «Перевірити рішення».
+                        </p>
+                    </div>
+                </div>
+
+                <!-- BOTTOM: Spreadsheet Area + Verification & Hints Sidebar -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+
+                    <!-- LEFT: Spreadsheet Area (8 cols on lg) -->
+                    <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                        <!-- Formula Bar -->
+                        <div class="bg-slate-50 border-b border-slate-200 p-2 flex items-center gap-2">
+                            <!-- Active Cell Address Box -->
+                            <div id="cell-address-box" class="w-16 h-9 bg-white border border-slate-300 rounded-lg flex items-center justify-center font-mono-code font-bold text-sm text-slate-800 select-none shadow-inner">
+                                A1
+                            </div>
+
+                            <!-- fx Icon -->
+                            <div class="text-slate-400 font-serif italic font-bold text-lg px-1 select-none">ƒx</div>
+
+                            <!-- Formula Input Field -->
+                            <input id="formula-input" type="text" placeholder="Введіть значення або формулу (напр. =SUM(B2:B6))..."
+                                class="flex-grow h-9 px-3 bg-white border border-slate-300 rounded-lg font-mono-code text-sm text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
+                                autocomplete="off" spellcheck="false">
+
+                            <!-- Confirm / Cancel Buttons -->
+                            <button onclick="app.commitFormulaInput()" class="h-9 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-sm" title="Підтвердити (Enter)">
+                                <span>✓</span>
+                                <span class="hidden sm:inline">Застосувати</span>
+                            </button>
+                            <button onclick="app.cancelFormulaInput()" class="h-9 px-2.5 bg-white hover:bg-slate-100 text-slate-600 border border-slate-300 rounded-lg text-xs font-semibold transition" title="Скасувати (Esc)">
+                                ✕
+                            </button>
+                        </div>
+
+                        <!-- Quick Formula Helper Toolbar -->
+                        <div class="bg-white border-b border-slate-100 px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto text-xs">
+                            <span class="text-slate-400 font-medium mr-1">Вставити:</span>
+                            <button onclick="app.insertToken('=')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded font-mono-code font-semibold text-slate-700 transition">=</button>
+                            <button onclick="app.insertToken('SUM(')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded font-mono-code text-slate-700 transition">SUM</button>
+                            <button onclick="app.insertToken('AVERAGE(')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded font-mono-code text-slate-700 transition">AVERAGE</button>
+                            <button onclick="app.insertToken('MIN(')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded font-mono-code text-slate-700 transition">MIN</button>
+                            <button onclick="app.insertToken('MAX(')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded font-mono-code text-slate-700 transition">MAX</button>
+                            <button onclick="app.insertToken('COUNT(')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded font-mono-code text-slate-700 transition">COUNT</button>
+                            <button onclick="app.insertToken('IF(')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded font-mono-code text-slate-700 transition">IF</button>
+                            <button onclick="app.insertToken('COUNTIF(')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded font-mono-code text-slate-700 transition">COUNTIF</button>
+                            <button onclick="app.insertToken('SUMIF(')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 rounded font-mono-code text-slate-700 transition">SUMIF</button>
+                            <button onclick="app.toggleAbsoluteRef()" class="ml-auto px-2 py-0.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded font-mono-code font-semibold transition" title="Зробити посилання абсолютним ($A$1)">$A$1</button>
+                        </div>
+
+                        <!-- Spreadsheet Grid Table -->
+                        <div class="sheet-container overflow-auto max-h-[520px] relative select-none">
+                            <table id="spreadsheet-table" class="w-full border-collapse text-sm">
+                                <!-- Rendered by JS -->
+                            </table>
+                        </div>
+
+                        <!-- Spreadsheet Footer Tips -->
+                        <div class="bg-slate-50 border-t border-slate-200 px-3 py-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+                            <div>💡 Порада: Під час введення формули клікайте по інших комірках, щоб вставити їхню адресу.</div>
+                            <div>Потягніть синій квадратик у кутку активної комірки для копіювання формули.</div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: Verification, Feedback & Guidance Panel (4 cols on lg) -->
+                    <div class="lg:col-span-4 space-y-4">
+                        <!-- Action & Feedback Card -->
+                        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-3">
+                            <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Перевірка та керування</div>
+
+                            <!-- Feedback Message Box -->
+                            <div id="feedback-box" class="hidden rounded-xl p-3.5 text-xs leading-relaxed border">
+                                <!-- Dynamic feedback -->
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex flex-col gap-2">
+                                <button id="btn-check-task" onclick="app.checkCurrentTask()" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm transition shadow-sm flex items-center justify-center gap-2">
+                                    <span>Перевірити рішення</span>
+                                </button>
+
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button id="btn-hint" onclick="app.requestHint()" class="py-2 px-3 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-semibold rounded-xl text-xs transition flex items-center justify-center gap-1">
+                                        <span>💡 Підказка</span>
+                                        <span id="hint-counter" class="text-[10px] opacity-75">(0/3)</span>
+                                    </button>
+                                    <button onclick="app.resetCurrentTask()" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition">
+                                        ↺ Скинути таблицю
+                                    </button>
+                                </div>
+
+                                <button id="btn-next-task" onclick="app.nextTask()" class="hidden w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm transition shadow-sm">
+                                    Наступне завдання →
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Progressive Hints Container -->
+                        <div id="hints-container" class="hidden bg-white rounded-2xl p-4 border border-amber-200 shadow-sm space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-amber-800 flex items-center gap-1.5">
+                                    <span>💡</span> Підказки лабораторії
+                                </span>
+                                <span class="text-[10px] text-slate-400">Кожна підказка зменшує бонус на 2 бали</span>
+                            </div>
+                            <div id="hints-list" class="space-y-2 text-xs text-slate-700">
+                                <!-- Hints injected here -->
+                            </div>
+                        </div>
+
+                        <!-- Mini Reference Card (Only in Learn Mode) -->
+                        <div id="learn-reference-card" class="bg-slate-900 text-slate-200 rounded-2xl p-4 text-xs space-y-2 shadow-sm">
+                            <div class="font-bold text-white flex items-center justify-between">
+                                <span>📘 Довідник синтаксису</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-blue-300">Режим навчання</span>
+                            </div>
+                            <ul class="space-y-1.5 text-slate-300 font-mono-code text-[11px]">
+                                <li><span class="text-blue-400">=B2*C2</span> — множення значень</li>
+                                <li><span class="text-blue-400">=SUM(B2:B6)</span> — сума діапазону</li>
+                                <li><span class="text-blue-400">=AVERAGE(B2:B6)</span> — середнє значення</li>
+                                <li><span class="text-blue-400">=IF(C2>=10;"Так";"Ні")</span> — умова</li>
+                                <li><span class="text-blue-400">=COUNTIF(B2:B6;">=10")</span> — кількість за умовою</li>
+                                <li><span class="text-blue-400">=SUMIF(A2:A6;"Хліб";C2:C6)</span> — сума за умовою</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: FINAL ASSESSMENT REPORT -->
+        <section id="view-report" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-6">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Аналітика навчальних досягнень</span>
+                        <h2 class="text-2xl font-bold text-slate-900 mt-1">Підсумковий звіт учня</h2>
+                        <p class="text-sm text-slate-500">Детальний аналіз виконання завдань у цифровій лабораторії</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="app.showHome()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition">
+                            Повернутися до тренажера
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Key Metrics Grid -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="text-xs text-slate-500 font-medium">Набрані бали</div>
+                        <div id="rep-score" class="text-2xl font-bold text-blue-600 mt-1">0 / 0</div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="text-xs text-slate-500 font-medium">Відсоток виконання</div>
+                        <div id="rep-percent" class="text-2xl font-bold text-emerald-600 mt-1">0%</div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="text-xs text-slate-500 font-medium">Рівень досягнень</div>
+                        <div id="rep-grade" class="text-lg font-bold text-slate-900 mt-1">Початковий</div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="text-xs text-slate-500 font-medium">Виправлено помилок</div>
+                        <div id="rep-bugs" class="text-2xl font-bold text-amber-600 mt-1">0</div>
+                    </div>
+                </div>
+
+                <!-- Mastered Functions & Recommendations -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border border-slate-200 rounded-xl p-5 space-y-3">
+                        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <span class="text-emerald-500">✔</span> Опановані інструменти та функції
+                        </h3>
+                        <div id="rep-mastered" class="flex flex-wrap gap-2">
+                            <!-- Badges -->
+                        </div>
+                    </div>
+
+                    <div class="border border-slate-200 rounded-xl p-5 space-y-3">
+                        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <span class="text-amber-500">📌</span> Типові помилки та рекомендації
+                        </h3>
+                        <div id="rep-recommendations" class="text-xs text-slate-600 space-y-2 leading-relaxed">
+                            <!-- Recommendations -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Breakdown Table -->
+                <div class="space-y-3">
+                    <h3 class="font-bold text-slate-900 text-sm">Деталізація за рівнями та режимами</h3>
+                    <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                                <tr>
+                                    <th class="p-3">Розділ / Рівень</th>
+                                    <th class="p-3">Статус</th>
+                                    <th class="p-3">Виконано завдань</th>
+                                    <th class="p-3">Бали</th>
+                                    <th class="p-3 text-right">Дія</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rep-table-body" class="divide-y divide-slate-100">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Custom Modal Dialog (Replaces alert/confirm) -->
+    <div id="custom-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-4">
+            <h3 id="modal-title" class="text-lg font-bold text-slate-900">Підтвердження</h3>
+            <p id="modal-body" class="text-sm text-slate-600 leading-relaxed">Ви впевнені?</p>
+            <div class="flex justify-end gap-2 pt-2">
+                <button id="modal-cancel" onclick="app.closeModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition">Скасувати</button>
+                <button id="modal-confirm" class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition">Підтвердити</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * ============================================================================
+         * 1. SAFE SPREADSHEET FORMULA PARSER & EVALUATOR (NO eval())
+         * ============================================================================
+         * Supports:
+         * - Arithmetic: +, -, *, /, ^, unary +/-, parentheses ()
+         * - Comparison: =, <>, !=, <, >, <=, >=
+         * - Cell references: A1, $A$1, $A1, A$1
+         * - Ranges: A1:B10
+         * - Functions: SUM, AVERAGE, MIN, MAX, COUNT, IF, COUNTIF, SUMIF
+         * - Argument separators: ; (primary Ukrainian/European) and ,
+         * - Decimal separators: . and , (Ukrainian format e.g. 12,5)
+         */
+        class FormulaEngine {
+            constructor(getCellRawValueFn) {
+                this.getCellRawValue = getCellRawValueFn;
+                this.evalStack = new Set(); // Circular reference detection
+            }
+
+            // Convert column letters (e.g., "A", "Z", "AA") to 0-based index
+            static colToIndex(colStr) {
+                let col = 0;
+                const s = colStr.toUpperCase();
+                for (let i = 0; i < s.length; i++) {
+                    col = col * 26 + (s.charCodeAt(i) - 64);
+                }
+                return col - 1;
+            }
+
+            // Convert 0-based index to column letters
+            static indexToCol(index) {
+                let col = '';
+                let n = index + 1;
+                while (n > 0) {
+                    let rem = (n - 1) % 26;
+                    col = String.fromCharCode(65 + rem) + col;
+                    n = Math.floor((n - 1) / 26);
+                }
+                return col;
+            }
+
+            // Parse address like "$B$2" -> { col: 1, row: 1, absCol: true, absRow: true }
+            static parseAddress(addr) {
+                const match = addr.trim().match(/^(\$?)([A-Za-z]+)(\$?)(\d+)$/);
+                if (!match) return null;
+                return {
+                    absCol: match[1] === '$',
+                    col: FormulaEngine.colToIndex(match[2]),
+                    absRow: match[3] === '$',
+                    row: parseInt(match[4], 10) - 1
+                };
+            }
+
+            // Format parsed address back to string
+            static formatAddress(parsed) {
+                return `${parsed.absCol ? '$' : ''}${FormulaEngine.indexToCol(parsed.col)}${parsed.absRow ? '$' : ''}${parsed.row + 1}`;
+            }
+
+            // Shift relative references when copying formulas
+            static shiftFormula(formula, dCol, dRow) {
+                if (typeof formula !== 'string' || !formula.startsWith('=')) return formula;
+                // Replace cell references outside of string literals
+                let result = '';
+                let inString = false;
+                let i = 0;
+                while (i < formula.length) {
+                    const ch = formula[i];
+                    if (ch === '"') {
+                        inString = !inString;
+                        result += ch;
+                        i++;
+                        continue;
+                    }
+                    if (!inString) {
+                        const sub = formula.slice(i);
+                        // Match cell reference not preceded by alphanumeric
+                        const prevChar = i > 0 ? formula[i - 1] : '';
+                        if (!/[A-Za-z0-9_]/.test(prevChar)) {
+                            const refMatch = sub.match(/^(\$?[A-Za-z]+\$?\d+)(?![A-Za-z0-9_(])/);
+                            if (refMatch) {
+                                const parsed = FormulaEngine.parseAddress(refMatch[1]);
+                                if (parsed) {
+                                    if (!parsed.absCol) parsed.col = Math.max(0, parsed.col + dCol);
+                                    if (!parsed.absRow) parsed.row = Math.max(0, parsed.row + dRow);
+                                    result += FormulaEngine.formatAddress(parsed);
+                                    i += refMatch[1].length;
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                    result += ch;
+                    i++;
+                }
+                return result;
+            }
+
+            // Expand range "A1:B3" into array of cell IDs ["A1", "B1", "A2", "B2", "A3", "B3"]
+            static expandRange(startAddr, endAddr) {
+                const p1 = FormulaEngine.parseAddress(startAddr);
+                const p2 = FormulaEngine.parseAddress(endAddr);
+                if (!p1 || !p2) throw new Error('#ПОСИЛ!');
+                const minCol = Math.min(p1.col, p2.col);
+                const maxCol = Math.max(p1.col, p2.col);
+                const minRow = Math.min(p1.row, p2.row);
+                const maxRow = Math.max(p1.row, p2.row);
+                const cells = [];
+                for (let r = minRow; r <= maxRow; r++) {
+                    for (let c = minCol; c <= maxCol; c++) {
+                        cells.push(`${FormulaEngine.indexToCol(c)}${r + 1}`);
+                    }
+                }
+                return cells;
+            }
+
+            // Evaluate a cell by its ID (e.g., "D2")
+            evaluateCell(cellId) {
+                const cleanId = cellId.replace(/\$/g, '').toUpperCase();
+                if (this.evalStack.has(cleanId)) {
+                    return '#ЦИКЛ!';
+                }
+                const raw = this.getCellRawValue(cleanId);
+                if (raw === undefined || raw === null || raw === '') return '';
+
+                if (typeof raw === 'string' && raw.trim().startsWith('=')) {
+                    this.evalStack.add(cleanId);
+                    try {
+                        const val = this.evaluateFormula(raw.trim().slice(1));
+                        this.evalStack.delete(cleanId);
+                        return val;
+                    } catch (err) {
+                        this.evalStack.delete(cleanId);
+                        return err.message.startsWith('#') ? err.message : '#ПОМИЛКА!';
+                    }
+                }
+
+                // Check if raw input is numeric (supports Ukrainian comma e.g., "12,5")
+                if (typeof raw === 'number') return raw;
+                const str = String(raw).trim();
+                if (/^-?\d+([.,]\d+)?$/.test(str)) {
+                    return parseFloat(str.replace(',', '.'));
+                }
+                return str;
+            }
+
+            // Tokenize formula expression
+            tokenize(expr) {
+                const tokens = [];
+                let i = 0;
+                while (i < expr.length) {
+                    const ch = expr[i];
+
+                    // Whitespace
+                    if (/\s/.test(ch)) {
+                        i++;
+                        continue;
+                    }
+
+                    // String literal "..."
+                    if (ch === '"') {
+                        let str = '';
+                        i++;
+                        while (i < expr.length && expr[i] !== '"') {
+                            str += expr[i];
+                            i++;
+                        }
+                        if (i >= expr.length) throw new Error('#ПОМИЛКА!');
+                        i++; // skip closing quote
+                        tokens.push({ type: 'STRING', value: str });
+                        continue;
+                    }
+
+                    // Numbers (supports 12.5 and 12,5 when not used as argument separator)
+                    if (/\d/.test(ch)) {
+                        let numStr = '';
+                        while (i < expr.length && /[\d.]/.test(expr[i])) {
+                            numStr += expr[i];
+                            i++;
+                        }
+                        // Check if comma is decimal separator (digit after comma, and we are not inside comma-separated args)
+                        if (expr[i] === ',' && /\d/.test(expr[i + 1] || '')) {
+                            // Heuristic: if formula uses ';' elsewhere, ',' is definitely decimal
+                            if (expr.includes(';') || !expr.includes('(')) {
+                                numStr += '.';
+                                i++;
+                                while (i < expr.length && /\d/.test(expr[i])) {
+                                    numStr += expr[i];
+                                    i++;
+                                }
+                            }
+                        }
+                        tokens.push({ type: 'NUMBER', value: parseFloat(numStr) });
+                        continue;
+                    }
+
+                    // Multi-char operators: <=, >=, <>, !=
+                    const twoChar = expr.slice(i, i + 2);
+                    if (['<=', '>=', '<>', '!='].includes(twoChar)) {
+                        tokens.push({ type: 'OP', value: twoChar === '!=' ? '<>' : twoChar });
+                        i += 2;
+                        continue;
+                    }
+
+                    // Single-char operators and delimiters
+                    if (['+', '-', '*', '/', '^', '=', '<', '>', '(', ')', ';', ',', ':'].includes(ch)) {
+                        tokens.push({ type: 'SYM', value: ch });
+                        i++;
+                        continue;
+                    }
+
+                    // Identifiers: Function names or Cell References ($A$1)
+                    if (/[A-Za-zА-Яа-яІіЇїЄєҐґ$]/.test(ch)) {
+                        let ident = '';
+                        while (i < expr.length && /[A-Za-zА-Яа-яІіЇїЄєҐґ0-9_$]/.test(expr[i])) {
+                            ident += expr[i];
+                            i++;
+                        }
+                        tokens.push({ type: 'IDENT', value: ident });
+                        continue;
+                    }
+
+                    throw new Error('#ПОМИЛКА!');
+                }
+                return tokens;
+            }
+
+            // Main entry to evaluate a formula string (without leading '=')
+            evaluateFormula(expr) {
+                const tokens = this.tokenize(expr);
+                if (tokens.length === 0) return 0;
+                let pos = 0;
+
+                const peek = () => tokens[pos];
+                const consume = () => tokens[pos++];
+
+                // Grammar: Comparison -> AddSub -> MulDiv -> Power -> Unary -> Primary
+                const parseComparison = () => {
+                    let left = parseAddSub();
+                    while (peek() && (peek().type === 'OP' || (peek().type === 'SYM' && ['=', '<', '>'].includes(peek().value)))) {
+                        const op = consume().value;
+                        const right = parseAddSub();
+                        left = this.applyComparison(left, right, op);
+                    }
+                    return left;
+                };
+
+                const parseAddSub = () => {
+                    let left = parseMulDiv();
+                    while (peek() && peek().type === 'SYM' && ['+', '-'].includes(peek().value)) {
+                        const op = consume().value;
+                        const right = parseMulDiv();
+                        const n1 = this.toNumber(left);
+                        const n2 = this.toNumber(right);
+                        left = op === '+' ? n1 + n2 : n1 - n2;
+                    }
+                    return left;
+                };
+
+                const parseMulDiv = () => {
+                    let left = parsePower();
+                    while (peek() && peek().type === 'SYM' && ['*', '/'].includes(peek().value)) {
+                        const op = consume().value;
+                        const right = parsePower();
+                        const n1 = this.toNumber(left);
+                        const n2 = this.toNumber(right);
+                        if (op === '/') {
+                            if (n2 === 0) throw new Error('#ДІЛ/0!');
+                            left = n1 / n2;
+                        } else {
+                            left = n1 * n2;
+                        }
+                    }
+                    return left;
+                };
+
+                const parsePower = () => {
+                    let base = parseUnary();
+                    if (peek() && peek().type === 'SYM' && peek().value === '^') {
+                        consume();
+                        const exp = parsePower();
+                        return Math.pow(this.toNumber(base), this.toNumber(exp));
+                    }
+                    return base;
+                };
+
+                const parseUnary = () => {
+                    if (peek() && peek().type === 'SYM' && ['+', '-'].includes(peek().value)) {
+                        const op = consume().value;
+                        const val = parseUnary();
+                        return op === '-' ? -this.toNumber(val) : this.toNumber(val);
+                    }
+                    return parsePrimary();
+                };
+
+                const parsePrimary = () => {
+                    const tok = peek();
+                    if (!tok) throw new Error('#ПОМИЛКА!');
+
+                    if (tok.type === 'NUMBER') {
+                        consume();
+                        return tok.value;
+                    }
+
+                    if (tok.type === 'STRING') {
+                        consume();
+                        return tok.value;
+                    }
+
+                    if (tok.type === 'SYM' && tok.value === '(') {
+                        consume();
+                        const val = parseComparison();
+                        if (!peek() || peek().value !== ')') throw new Error('#ДУЖКИ!');
+                        consume();
+                        return val;
+                    }
+
+                    if (tok.type === 'IDENT') {
+                        const ident = consume().value;
+
+                        // Check if it's a function call: IDENT '(' ... ')'
+                        if (peek() && peek().type === 'SYM' && peek().value === '(') {
+                            consume(); // '('
+                            const args = [];
+                            if (peek() && !(peek().type === 'SYM' && peek().value === ')')) {
+                                while (true) {
+                                    // Check if argument is a Range (e.g., A1:B5)
+                                    if (
+                                        peek() && peek().type === 'IDENT' &&
+                                        tokens[pos + 1] && tokens[pos + 1].type === 'SYM' && tokens[pos + 1].value === ':' &&
+                                        tokens[pos + 2] && tokens[pos + 2].type === 'IDENT'
+                                    ) {
+                                        const start = consume().value;
+                                        consume(); // ':'
+                                        const end = consume().value;
+                                        args.push({ type: 'RANGE', cells: FormulaEngine.expandRange(start, end) });
+                                    } else {
+                                        args.push({ type: 'VALUE', value: parseComparison() });
+                                    }
+
+                                    if (peek() && peek().type === 'SYM' && (peek().value === ';' || peek().value === ',')) {
+                                        consume();
+                                    } else {
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!peek() || peek().value !== ')') throw new Error('#ДУЖКИ!');
+                            consume(); // ')'
+                            return this.callFunction(ident.toUpperCase(), args);
+                        }
+
+                        // Boolean literals
+                        if (ident.toUpperCase() === 'TRUE' || ident.toUpperCase() === 'ІСТИНА') return true;
+                        if (ident.toUpperCase() === 'FALSE' || ident.toUpperCase() === 'ХИБНІСТЬ') return false;
+
+                        // Cell Reference (e.g., B2 or $B$2)
+                        const parsed = FormulaEngine.parseAddress(ident);
+                        if (!parsed) throw new Error('#ІМ\'Я?');
+                        const val = this.evaluateCell(ident);
+                        if (typeof val === 'string' && val.startsWith('#')) throw new Error(val);
+                        return val === '' ? 0 : val;
+                    }
+
+                    throw new Error('#ПОМИЛКА!');
+                };
+
+                const result = parseComparison();
+                if (pos < tokens.length) throw new Error('#ПОМИЛКА!');
+                return result;
+            }
+
+            toNumber(val) {
+                if (val === '' || val === null || val === undefined) return 0;
+                if (typeof val === 'boolean') return val ? 1 : 0;
+                if (typeof val === 'number') return val;
+                const num = parseFloat(String(val).replace(',', '.'));
+                if (isNaN(num)) throw new Error('#ЗНАЧ!');
+                return num;
+            }
+
+            applyComparison(a, b, op) {
+                // Normalize empty strings to 0 if compared with number
+                if (typeof a === 'number' && b === '') b = 0;
+                if (typeof b === 'number' && a === '') a = 0;
+
+                switch (op) {
+                    case '=': return a == b;
+                    case '<>': return a != b;
+                    case '<': return a < b;
+                    case '>': return a > b;
+                    case '<=': return a <= b;
+                    case '>=': return a >= b;
+                    default: throw new Error('#ПОМИЛКА!');
+                }
+            }
+
+            // Extract numeric values from mixed arguments (ranges & single values)
+            collectNumbers(args, ignoreEmptyAndStringsInRange = true) {
+                const nums = [];
+                for (const arg of args) {
+                    if (arg.type === 'RANGE') {
+                        for (const cellId of arg.cells) {
+                            const val = this.evaluateCell(cellId);
+                            if (typeof val === 'string' && val.startsWith('#')) throw new Error(val);
+                            if (typeof val === 'number' && !isNaN(val)) {
+                                nums.push(val);
+                            } else if (!ignoreEmptyAndStringsInRange && val !== '') {
+                                nums.push(this.toNumber(val));
+                            }
+                        }
+                    } else {
+                        if (arg.value !== '' && arg.value !== null) {
+                            nums.push(this.toNumber(arg.value));
+                        }
+                    }
+                }
+                return nums;
+            }
+
+            // Match criteria for COUNTIF and SUMIF (e.g., ">=10", "Канцелярія", "<50", 10)
+            matchesCriteria(cellVal, criteria) {
+                if (criteria === null || criteria === undefined) return false;
+                if (typeof criteria === 'number' || typeof criteria === 'boolean') {
+                    return cellVal == criteria;
+                }
+                const critStr = String(criteria).trim();
+                const opMatch = critStr.match(/^(>=|<=|<>|!=|=|>|<)(.*)$/);
+                if (opMatch) {
+                    const op = opMatch[1] === '!=' ? '<>' : opMatch[1];
+                    const rhsRaw = opMatch[2].trim();
+                    const rhsNum = parseFloat(rhsRaw.replace(',', '.'));
+                    const lhsNum = typeof cellVal === 'number' ? cellVal : parseFloat(String(cellVal).replace(',', '.'));
+
+                    if (!isNaN(rhsNum) && !isNaN(lhsNum)) {
+                        return this.applyComparison(lhsNum, rhsNum, op);
+                    }
+                    return this.applyComparison(String(cellVal).toLowerCase(), rhsRaw.toLowerCase(), op);
+                }
+
+                // Direct equality (case-insensitive for strings)
+                if (typeof cellVal === 'string') {
+                    return cellVal.trim().toLowerCase() === critStr.toLowerCase();
+                }
+                return cellVal == critStr;
+            }
+
+            // Execute built-in spreadsheet functions
+            callFunction(name, args) {
+                // Support Ukrainian aliases just in case, plus standard English names
+                const fnMap = {
+                    'SUM': 'SUM', 'СУММ': 'SUM', 'СУМА': 'SUM',
+                    'AVERAGE': 'AVERAGE', 'СРЗНАЧ': 'AVERAGE', 'СЕРЕДНЄ': 'AVERAGE',
+                    'MIN': 'MIN', 'МІН': 'MIN',
+                    'MAX': 'MAX', 'МАКС': 'MAX',
+                    'COUNT': 'COUNT', 'СЧЁТ': 'COUNT', 'КІЛЬКІСТЬ': 'COUNT',
+                    'IF': 'IF', 'ЕСЛИ': 'IF', 'ЯКЩО': 'IF',
+                    'COUNTIF': 'COUNTIF', 'СЧЁТЕСЛИ': 'COUNTIF',
+                    'SUMIF': 'SUMIF', 'СУММЕСЛИ': 'SUMIF'
+                };
+                const fn = fnMap[name];
+                if (!fn) throw new Error('#ІМ\'Я?');
+
+                switch (fn) {
+                    case 'SUM': {
+                        if (args.length === 0) throw new Error('#АРГУМЕНТИ!');
+                        const nums = this.collectNumbers(args);
+                        return nums.reduce((acc, v) => acc + v, 0);
+                    }
+                    case 'AVERAGE': {
+                        if (args.length === 0) throw new Error('#АРГУМЕНТИ!');
+                        const nums = this.collectNumbers(args);
+                        if (nums.length === 0) throw new Error('#ДІЛ/0!');
+                        return nums.reduce((acc, v) => acc + v, 0) / nums.length;
+                    }
+                    case 'MIN': {
+                        if (args.length === 0) throw new Error('#АРГУМЕНТИ!');
+                        const nums = this.collectNumbers(args);
+                        return nums.length === 0 ? 0 : Math.min(...nums);
+                    }
+                    case 'MAX': {
+                        if (args.length === 0) throw new Error('#АРГУМЕНТИ!');
+                        const nums = this.collectNumbers(args);
+                        return nums.length === 0 ? 0 : Math.max(...nums);
+                    }
+                    case 'COUNT': {
+                        if (args.length === 0) throw new Error('#АРГУМЕНТИ!');
+                        const nums = this.collectNumbers(args);
+                        return nums.length;
+                    }
+                    case 'IF': {
+                        if (args.length < 2 || args.length > 3) throw new Error('#АРГУМЕНТИ!');
+                        const cond = args[0].value;
+                        const isTrue = Boolean(cond);
+                        if (isTrue) {
+                            return args[1].value;
+                        } else {
+                            return args.length === 3 ? args[2].value : false;
+                        }
+                    }
+                    case 'COUNTIF': {
+                        if (args.length !== 2 || args[0].type !== 'RANGE') throw new Error('#АРГУМЕНТИ!');
+                        const rangeCells = args[0].cells;
+                        const criteria = args[1].value;
+                        let count = 0;
+                        for (const cid of rangeCells) {
+                            const val = this.evaluateCell(cid);
+                            if (this.matchesCriteria(val, criteria)) count++;
+                        }
+                        return count;
+                    }
+                    case 'SUMIF': {
+                        if (args.length < 2 || args.length > 3 || args[0].type !== 'RANGE') throw new Error('#АРГУМЕНТИ!');
+                        const critRange = args[0].cells;
+                        const criteria = args[1].value;
+                        const sumRange = args.length === 3 && args[2].type === 'RANGE' ? args[2].cells : critRange;
+                        if (critRange.length !== sumRange.length) throw new Error('#ЗНАЧ!');
+
+                        let total = 0;
+                        for (let i = 0; i < critRange.length; i++) {
+                            const cVal = this.evaluateCell(critRange[i]);
+                            if (this.matchesCriteria(cVal, criteria)) {
+                                const sVal = this.evaluateCell(sumRange[i]);
+                                if (typeof sVal === 'number' && !isNaN(sVal)) {
+                                    total += sVal;
+                                }
+                            }
+                        }
+                        return total;
+                    }
+                }
+            }
+        }
+
+        /**
+         * ============================================================================
+         * 2. CURRICULUM DATA: 5 LEVELS, DEBUG MODE, CHALLENGE MODE, SANDBOX DATASETS
+         * ============================================================================
+         */
+        const CURRICULUM = {
+            levels: [
+                {
+                    id: 'lvl1',
+                    number: 1,
+                    title: 'Арифметичні операції',
+                    topic: 'Адресація, +, -, *, /, відносні та абсолютні посилання',
+                    description: 'Сюжет магазину: обчислення вартості товарів, знижок та податку з використанням посилань на комірки.',
+                    functions: ['+', '-', '*', '/', '$A$1'],
+                    tasks: [
+                        {
+                            id: 'l1_t1',
+                            title: 'Вартість кожного товару в чеку',
+                            points: 10,
+                            instruction: `
+                                <p>У таблиці наведено покупки в шкільному буфеті. У комірці <b>D2</b> обчисліть вартість соку, перемноживши ціну (<b>B2</b>) на кількість (<b>C2</b>).</p>
+                                <p>Потім скопіюйте формулу вниз у діапазон <b>D3:D5</b> (за допомогою маркера автозаповнення або вручну).</p>
+                            `,
+                            targets: ['D2', 'D3', 'D4', 'D5'],
+                            rows: 7, cols: 5,
+                            initialData: {
+                                A1: 'Товар', B1: 'Ціна (грн)', C1: 'Кількість', D1: 'Вартість (грн)',
+                                A2: 'Сік яблучний', B2: 24, C2: 3,
+                                A3: 'Булочка з маком', B3: 18, C3: 4,
+                                A4: 'Шоколад чорний', B4: 45, C4: 2,
+                                A5: 'Вода мінеральна', B5: 15, C5: 5
+                            },
+                            hints: [
+                                'Для множення в електронних таблицях використовується символ зірочки (*). Не забудьте почати формулу зі знака «=».',
+                                'Структура формули для першого рядка: =АдресаЦіни*АдресаКількості.',
+                                'У комірці D2 введіть =B2*C2. Натисніть Enter, а потім потягніть синій квадратик у правому нижньому кутку D2 вниз до D5 — адреси автоматично зміняться на B3*C3, B4*C4, B5*C5.'
+                            ],
+                            validate: (sheet, evalFn) => {
+                                const expected = [72, 72, 90, 75];
+                                for (let i = 0; i < 4; i++) {
+                                    const cell = `D${i + 2}`;
+                                    const raw = String(sheet[cell] || '');
+                                    const val = evalFn(cell);
+                                    if (!raw.startsWith('=')) return { ok: false, msg: `У комірці ${cell} має бути формула (починатися з =), а не просто число.` };
+                                    if (Math.abs(val - expected[i]) > 0.01) return { ok: false, msg: `Перевірте обчислення в комірці ${cell}. Очікується ${expected[i]}, отримано ${val}.` };
+                                }
+                                return { ok: true, explanation: 'Чудово! Формула =B2*C2 при копіюванні вниз автоматично змінила відносні посилання на B3*C3, B4*C4 та B5*C5.' };
+                            }
+                        },
+                        {
+                            id: 'l1_t2',
+                            title: 'Абсолютні посилання: розрахунок знижки',
+                            points: 15,
+                            instruction: `
+                                <p>Магазин надає фіксовану знижку, розмір якої записано у комірці <b>F1</b> (10%, тобто 0,1).</p>
+                                <p>У комірці <b>D2</b> обчисліть суму знижки для товару: помножте вартість (<b>C2</b>) на відсоток знижки (<b>$F$1</b>). Використайте <b>абсолютне посилання</b>, щоб при копіюванні в <b>D3:D4</b> адреса F1 не змінювалася!</p>
+                            `,
+                            targets: ['D2', 'D3', 'D4'],
+                            rows: 6, cols: 6,
+                            initialData: {
+                                A1: 'Товар', B1: 'Ціна', C1: 'Вартість', D1: 'Знижка (грн)', E1: 'Відсоток:', F1: 0.1,
+                                A2: 'Зошит 48 арк.', B2: 30, C2: '=B2*5',
+                                A3: 'Ручка гелева', B3: 20, C3: '=B3*4',
+                                A4: 'Пенал шкільний', B4: 150, C4: '=B4*1'
+                            },
+                            hints: [
+                                'Щоб адреса комірки не змінювалася під час копіювання формули, перед літерою стовпця та номером рядка ставлять знак $ (наприклад, $F$1).',
+                                'Структура формули: =Вартість * $F$1. Ви можете натиснути кнопку «$A$1» на панелі інструментів.',
+                                'У комірці D2 введіть =C2*$F$1 та скопіюйте формулу вниз до D4. Зверніть увагу: C2 зміниться на C3 та C4, а $F$1 залишиться незмінним.'
+                            ],
+                            validate: (sheet, evalFn) => {
+                                const expected = [15, 8, 15];
+                                for (let i = 0; i < 3; i++) {
+                                    const cell = `D${i + 2}`;
+                                    const raw = String(sheet[cell] || '').toUpperCase();
+                                    const val = evalFn(cell);
+                                    if (!raw.startsWith('=')) return { ok: false, msg: `У комірці ${cell} повинна бути формула.` };
+                                    if (!raw.includes('$F$1')) return { ok: false, msg: `У формулі комірки ${cell} не використано абсолютне посилання $F$1.` };
+                                    if (Math.abs(val - expected[i]) > 0.01) return { ok: false, msg: `Неправильне значення в ${cell}.` };
+                                }
+                                return { ok: true, explanation: 'Відмінно! Абсолютне посилання $F$1 зафіксувало комірку зі ставкою знижки під час копіювання формули.' };
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 'lvl2',
+                    number: 2,
+                    title: 'Статистичні функції',
+                    topic: 'SUM, AVERAGE, MIN, MAX, COUNT',
+                    description: 'Аналіз успішності учнів 10 класу з інформатики: обчислення суми, середнього балу, мінімуму, максимуму та кількості.',
+                    functions: ['SUM', 'AVERAGE', 'MIN', 'MAX', 'COUNT'],
+                    tasks: [
+                        {
+                            id: 'l2_t1',
+                            title: 'Аналіз оцінок за семестр',
+                            points: 15,
+                            instruction: `
+                                <p>Проаналізуйте оцінки учнів у діапазоні <b>B2:B7</b> та заповніть підсумкову таблицю:</p>
+                                <ul class="list-disc pl-4 space-y-1">
+                                    <li><b>E2</b> — загальна сума балів усіх учнів (<b>SUM</b>)</li>
+                                    <li><b>E3</b> — середній бал групи (<b>AVERAGE</b>)</li>
+                                    <li><b>E4</b> — найвищий бал (<b>MAX</b>)</li>
+                                    <li><b>E5</b> — найнижчий бал (<b>MIN</b>)</li>
+                                    <li><b>E6</b> — кількість учнів, які мають оцінку (<b>COUNT</b>)</li>
+                                </ul>
+                            `,
+                            targets: ['E2', 'E3', 'E4', 'E5', 'E6'],
+                            rows: 8, cols: 6,
+                            initialData: {
+                                A1: 'Учень', B1: 'Оцінка', D1: 'Показник', E1: 'Результат',
+                                A2: 'Бойко Олена', B2: 11, D2: 'Сума балів',
+                                A3: 'Коваленко Ігор', B3: 8, D3: 'Середній бал',
+                                A4: 'Мельник Софія', B4: 12, D4: 'Максимум',
+                                A5: 'Шевченко Тарас', B5: 7, D5: 'Мінімум',
+                                A6: 'Ткаченко Анна', B6: 10, D6: 'Кількість оцінок',
+                                A7: 'Бондар Максим', B7: 9
+                            },
+                            hints: [
+                                'Усі статистичні функції приймають як аргумент діапазон комірок, записаний через двокрапку: B2:B7.',
+                                'Формат виклику: =ФУНКЦІЯ(B2:B7). Наприклад, для суми використовується SUM, для середнього — AVERAGE.',
+                                'Введіть по черзі: у E2 -> =SUM(B2:B7), у E3 -> =AVERAGE(B2:B7), у E4 -> =MAX(B2:B7), у E5 -> =MIN(B2:B7), у E6 -> =COUNT(B2:B7).'
+                            ],
+                            validate: (sheet, evalFn) => {
+                                const checks = [
+                                    { cell: 'E2', fn: 'SUM', exp: 57 },
+                                    { cell: 'E3', fn: 'AVERAGE', exp: 9.5 },
+                                    { cell: 'E4', fn: 'MAX', exp: 12 },
+                                    { cell: 'E5', fn: 'MIN', exp: 7 },
+                                    { cell: 'E6', fn: 'COUNT', exp: 6 }
+                                ];
+                                for (const c of checks) {
+                                    const raw = String(sheet[c.cell] || '').toUpperCase();
+                                    const val = evalFn(c.cell);
+                                    if (!raw.startsWith('=') || !raw.includes(c.fn)) {
+                                        return { ok: false, msg: `У комірці ${c.cell} потрібно використати функцію ${c.fn}.` };
+                                    }
+                                    if (Math.abs(val - c.exp) > 0.01) {
+                                        return { ok: false, msg: `Неправильний результат у ${c.cell}. Перевірте діапазон B2:B7.` };
+                                    }
+                                }
+                                return { ok: true, explanation: 'Усі 5 статистичних функцій застосовано бездоганно! Зверніть увагу, як швидко вони аналізують масив даних.' };
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 'lvl3',
+                    number: 3,
+                    title: 'Логічна функція IF',
+                    topic: 'Розгалуження, оператори порівняння (>=, <, =), текстові результати',
+                    description: 'Автоматичне виставлення статусу «Зараховано» або «Не зараховано» за результатами контрольної роботи.',
+                    functions: ['IF', '>=', '<', '='],
+                    tasks: [
+                        {
+                            id: 'l3_t1',
+                            title: 'Підсумки контрольної роботи',
+                            points: 15,
+                            instruction: `
+                                <p>Для успішного складання контрольної роботи учень має набрати <b>не менше 7 балів</b> (>=7).</p>
+                                <p>У комірці <b>C2</b> запишіть формулу з функцією <b>IF</b>: якщо бал у комірці <b>B2</b> більший або дорівнює 7, вивести текст <b>"Зараховано"</b>, інакше — <b>"Не зараховано"</b>. Скопіюйте формулу в <b>C3:C6</b>.</p>
+                            `,
+                            targets: ['C2', 'C3', 'C4', 'C5', 'C6'],
+                            rows: 7, cols: 4,
+                            initialData: {
+                                A1: 'Прізвище учня', B1: 'Бал', C1: 'Статус',
+                                A2: 'Лисенко Дмитро', B2: 9,
+                                A3: 'Савченко Марія', B3: 5,
+                                A4: 'Кравчук Артем', B4: 7,
+                                A5: 'Мороз Вікторія', B5: 11,
+                                A6: 'Павленко Олег', B6: 6
+                            },
+                            hints: [
+                                'Функція IF має три аргументи, розділені крапкою з комою (;): умова, значення_якщо_істина, значення_якщо_хибність.',
+                                'Текстові результати обов\'язково беруться в подвійні лапки: "Зараховано" та "Не зараховано". Структура: =IF(умова; "Так"; "Ні").',
+                                'У комірці C2 введіть =IF(B2>=7;"Зараховано";"Не зараховано") і скопіюйте формулу вниз до C6.'
+                            ],
+                            validate: (sheet, evalFn) => {
+                                const expected = ['Зараховано', 'Не зараховано', 'Зараховано', 'Зараховано', 'Не зараховано'];
+                                for (let i = 0; i < 5; i++) {
+                                    const cell = `C${i + 2}`;
+                                    const raw = String(sheet[cell] || '').toUpperCase();
+                                    const val = String(evalFn(cell));
+                                    if (!raw.startsWith('=') || !raw.includes('IF')) {
+                                        return { ok: false, msg: `У комірці ${cell} необхідно використати логічну функцію IF.` };
+                                    }
+                                    if (val.toLowerCase() !== expected[i].toLowerCase()) {
+                                        return { ok: false, msg: `У комірці ${cell} отримано "${val}", а очікується "${expected[i]}". Перевірте знак >= (не менше 7 означає >=7).` };
+                                    }
+                                }
+                                return { ok: true, explanation: 'Чудово! Логічна функція IF автоматично перевірила умову B2>=7 для кожного учня.' };
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 'lvl4',
+                    number: 4,
+                    title: 'Функції з умовами',
+                    topic: 'COUNTIF, SUMIF, критерії відбору даних',
+                    description: 'Аналіз продажів магазину за категоріями товарів та обсягами виручки за допомогою умовних функцій.',
+                    functions: ['COUNTIF', 'SUMIF'],
+                    tasks: [
+                        {
+                            id: 'l4_t1',
+                            title: 'Аналітика продажів за категоріями',
+                            points: 20,
+                            instruction: `
+                                <p>У таблиці зафіксовано продажі товарів різних категорій (діапазон <b>A2:A7</b>) та суми чеків (<b>C2:C7</b>).</p>
+                                <ul class="list-disc pl-4 space-y-1">
+                                    <li>У комірці <b>F2</b> порахуйте, скільки разів продавали товари категорії <b>"Канцелярія"</b> (використайте <b>COUNTIF</b>).</li>
+                                    <li>У комірці <b>F3</b> обчисліть загальну суму продажів категорії <b>"Канцелярія"</b> (використайте <b>SUMIF</b>).</li>
+                                    <li>У комірці <b>F4</b> порахуйте кількість чеків на суму <b>понад 100 грн</b> (">100") у діапазоні <b>C2:C7</b> (використайте <b>COUNTIF</b>).</li>
+                                </ul>
+                            `,
+                            targets: ['F2', 'F3', 'F4'],
+                            rows: 8, cols: 6,
+                            initialData: {
+                                A1: 'Категорія', B1: 'Товар', C1: 'Сума (грн)', E1: 'Аналітичний запит', F1: 'Значення',
+                                A2: 'Канцелярія', B2: 'Зошити', C2: 120, E2: 'Кількість продажів "Канцелярія"',
+                                A3: 'Електроніка', B3: 'Флешка 32ГБ', C3: 280, E3: 'Сума продажів "Канцелярія"',
+                                A4: 'Канцелярія', B4: 'Ручки набір', C4: 85, E4: 'Кількість чеків > 100 грн',
+                                A5: 'Книги', B5: 'Довідник ЗНО', C5: 190,
+                                A6: 'Канцелярія', B6: 'Папір А4', C6: 210,
+                                A7: 'Електроніка', B7: 'Мишка дротова', C7: 150
+                            },
+                            hints: [
+                                'COUNTIF(діапазон; критерій) рахує комірки за умовою. SUMIF(діапазон_умови; критерій; діапазон_сумування) додає числа з третього аргументу.',
+                                'Критерій завжди береться в лапки: "Канцелярія" або ">100".',
+                                'Формули: F2 -> =COUNTIF(A2:A7;"Канцелярія"), F3 -> =SUMIF(A2:A7;"Канцелярія";C2:C7), F4 -> =COUNTIF(C2:C7;">100").'
+                            ],
+                            validate: (sheet, evalFn) => {
+                                if (!String(sheet['F2'] || '').toUpperCase().includes('COUNTIF') || evalFn('F2') !== 3) {
+                                    return { ok: false, msg: 'Перевірте комірку F2: використайте COUNTIF для діапазону A2:A7 з критерієм "Канцелярія" (очікується 3).' };
+                                }
+                                if (!String(sheet['F3'] || '').toUpperCase().includes('SUMIF') || evalFn('F3') !== 415) {
+                                    return { ok: false, msg: 'Перевірте комірку F3: використайте SUMIF(A2:A7;"Канцелярія";C2:C7) (очікується 415).' };
+                                }
+                                if (!String(sheet['F4'] || '').toUpperCase().includes('COUNTIF') || evalFn('F4') !== 5) {
+                                    return { ok: false, msg: 'Перевірте комірку F4: використайте COUNTIF(C2:C7;">100") (очікується 5).' };
+                                }
+                                return { ok: true, explanation: 'Блискуче! Ви вмієте фільтрувати та агрегувати дані за текстовими й числовими умовами.' };
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 'lvl5',
+                    number: 5,
+                    title: 'Комплексне завдання',
+                    topic: 'Бюджет класного заходу: поєднання всіх вивчених функцій',
+                    description: 'Повноцінний фінансовий розрахунок витрат на шкільний захід із перевіркою вкладення в бюджет.',
+                    functions: ['*', 'SUM', 'AVERAGE', 'MIN', 'MAX', 'SUMIF', 'IF'],
+                    tasks: [
+                        {
+                            id: 'l5_t1',
+                            title: 'Кошторис класного свята',
+                            points: 30,
+                            instruction: `
+                                <p>10-А клас планує захід із виділеним бюджетом <b>2000 грн</b> (комірка <b>G1</b>). Виконайте повний розрахунок:</p>
+                                <ol class="list-decimal pl-4 space-y-1">
+                                    <li>У стовпці <b>E</b> (<b>E2:E6</b>) обчисліть вартість кожної позиції (Ціна * Кількість).</li>
+                                    <li>У <b>G3</b> обчисліть <b>загальні витрати</b> за допомогою <b>SUM</b>.</li>
+                                    <li>У <b>G4</b> обчисліть витрати лише на категорію <b>"Їжа"</b> за допомогою <b>SUMIF</b>.</li>
+                                    <li>У <b>G5</b> знайдіть <b>найдорожчу позицію</b> (<b>MAX</b> у стовпці E).</li>
+                                    <li>У <b>G6</b> перевірте бюджет функцією <b>IF</b>: якщо загальні витрати (<b>G3</b>) не перевищують бюджет (<b>G1</b>), вивести <b>"В межах бюджету"</b>, інакше — <b>"Перевищення"</b>.</li>
+                                </ol>
+                            `,
+                            targets: ['E2', 'E3', 'E4', 'E5', 'E6', 'G3', 'G4', 'G5', 'G6'],
+                            rows: 8, cols: 7,
+                            initialData: {
+                                A1: 'Категорія', B1: 'Позиція', C1: 'Ціна', D1: 'К-сть', E1: 'Сума', F1: 'Бюджет:', G1: 2000,
+                                A2: 'Їжа', B2: 'Піца велика', C2: 260, D2: 4, F2: 'Показник', G2: 'Результат',
+                                A3: 'Декор', B3: 'Кульки гелієві', C3: 45, D3: 10, F3: 'Загальні витрати',
+                                A4: 'Їжа', B4: 'Сік фруктовий', C4: 42, D4: 6, F4: 'Витрати на "Їжа"',
+                                A5: 'Призи', B5: 'Настільна гра', C5: 320, D5: 1, F5: 'Макс. позиція',
+                                A6: 'Декор', B6: 'Гірлянда LED', C6: 180, D6: 1, F6: 'Статус бюджету'
+                            },
+                            hints: [
+                                'Спочатку заповніть стовпець E формулою =C2*D2 та скопіюйте її до E6. Суми мають бути: 1040, 450, 252, 320, 180.',
+                                'Для G3 використайте =SUM(E2:E6), для G4 — =SUMIF(A2:A6;"Їжа";E2:E6), для G5 — =MAX(E2:E6).',
+                                'У комірці G6 запишіть =IF(G3<=G1;"В межах бюджету";"Перевищення"). Оскільки 2242 > 2000, результатом буде "Перевищення".'
+                            ],
+                            validate: (sheet, evalFn) => {
+                                const rowSums = [1040, 450, 252, 320, 180];
+                                for (let i = 0; i < 5; i++) {
+                                    const c = `E${i + 2}`;
+                                    if (!String(sheet[c] || '').startsWith('=') || evalFn(c) !== rowSums[i]) {
+                                        return { ok: false, msg: `Перевірте формулу вартості у комірці ${c}.` };
+                                    }
+                                }
+                                if (evalFn('G3') !== 2242 || !String(sheet['G3']).toUpperCase().includes('SUM')) {
+                                    return { ok: false, msg: 'У комірці G3 обчисліть загальну суму =SUM(E2:E6).' };
+                                }
+                                if (evalFn('G4') !== 1292 || !String(sheet['G4']).toUpperCase().includes('SUMIF')) {
+                                    return { ok: false, msg: 'У комірці G4 обчисліть витрати на категорію "Їжа" за допомогою SUMIF.' };
+                                }
+                                if (evalFn('G5') !== 1040 || !String(sheet['G5']).toUpperCase().includes('MAX')) {
+                                    return { ok: false, msg: 'У комірці G5 знайдіть максимальне значення в діапазоні E2:E6.' };
+                                }
+                                if (String(evalFn('G6')).toLowerCase() !== 'перевищення' || !String(sheet['G6']).toUpperCase().includes('IF')) {
+                                    return { ok: false, msg: 'У комірці G6 використайте IF(G3<=G1;"В межах бюджету";"Перевищення").' };
+                                }
+                                return { ok: true, explanation: 'Вітаємо! Ви успішно виконали комплексний фінансовий аналіз проєкту, поєднавши всі вивчені інструменти.' };
+                            }
+                        }
+                    ]
+                }
+            ],
+
+            // EXTRA MODE 1: FIND THE BUG
+            debugTasks: [
+                {
+                    id: 'dbg_1',
+                    title: 'Помилка №1: Формула не обчислюється',
+                    points: 15,
+                    bugCell: 'D2',
+                    expectedType: 'missing_eq',
+                    instruction: `
+                        <p>У комірці <b>D2</b> мала обчислитися вартість товару (Ціна * Кількість), але замість результату відображається сам текст формули.</p>
+                        <p>Знайдіть комірку з помилкою, вкажіть її тип у панелі праворуч та виправте формулу.</p>
+                    `,
+                    targets: ['D2'],
+                    rows: 5, cols: 4,
+                    initialData: {
+                        A1: 'Товар', B1: 'Ціна', C1: 'Кількість', D1: 'Вартість',
+                        A2: 'Навушники', B2: 450, C2: 2, D2: 'B2*C2',
+                        A3: 'Кабель USB', B3: 120, C3: 3, D3: '=B3*C3'
+                    },
+                    hints: [
+                        'Подивіться на комірку D2 у рядку формул. Чим вона відрізняється від правильної комірки D3?',
+                        'Будь-яка формула в електронних таблицях обов\'язково починається зі знака рівності (=).',
+                        'Оберіть тип «Відсутній знак "="» та змініть вміст D2 на =B2*C2.'
+                    ],
+                    validate: (sheet, evalFn, errType) => {
+                        if (errType !== 'missing_eq') return { ok: false, msg: 'Неправильно визначено тип помилки у випадаючому списку.' };
+                        if (String(sheet['D2'] || '').trim() !== '=B2*C2' && evalFn('D2') !== 900) {
+                            return { ok: false, msg: 'Виправте формулу в комірці D2, щоб вона обчислювала добуток B2 та C2.' };
+                        }
+                        if (evalFn('D2') !== 900 || !String(sheet['D2']).startsWith('=')) {
+                            return { ok: false, msg: 'Формула в D2 має починатися з = та давати результат 900.' };
+                        }
+                        return { ok: true, explanation: 'Причина помилки: без знака «=» табличний процесор сприймає запис B2*C2 як звичайний текст і не виконує обчислень.' };
+                    }
+                },
+                {
+                    id: 'dbg_2',
+                    title: 'Помилка №2: Неправильний підсумок продажів',
+                    points: 15,
+                    bugCell: 'B6',
+                    expectedType: 'wrong_range',
+                    instruction: `
+                        <p>Менеджер порахував загальну суму продажів за тиждень у комірці <b>B6</b>, але сума вийшла заниженою (550 замість 700).</p>
+                        <p>Дослідіть формулу в комірці <b>B6</b>, вкажіть тип помилки та виправте її.</p>
+                    `,
+                    targets: ['B6'],
+                    rows: 7, cols: 3,
+                    initialData: {
+                        A1: 'День тижня', B1: 'Виручка (грн)',
+                        A2: 'Понеділок', B2: 120,
+                        A3: 'Вівторок', B3: 180,
+                        A4: 'Середа', B4: 250,
+                        A5: 'Четвер', B5: 150,
+                        A6: 'Разом:', B6: '=SUM(B2:B4)'
+                    },
+                    hints: [
+                        'Клікніть на комірку B6 і подивіться в рядок формул: які комірки входять у функцію SUM?',
+                        'Виручка за четвер знаходиться в комірці B5, але діапазон обривається на B4.',
+                        'Оберіть тип «Неправильно вказаний діапазон комірок» і замініть у B6 формулу на =SUM(B2:B5).'
+                    ],
+                    validate: (sheet, evalFn, errType) => {
+                        if (errType !== 'wrong_range') return { ok: false, msg: 'Оберіть правильний тип помилки у списку.' };
+                        if (!String(sheet['B6'] || '').startsWith('=') || evalFn('B6') !== 700) {
+                            return { ok: false, msg: 'Виправте діапазон у формулі комірки B6, щоб сума дорівнювала 700.' };
+                        }
+                        return { ok: true, explanation: 'Причина помилки: при додаванні нового рядка даних діапазон B2:B4 не охопив комірку B5, через що частина даних не враховувалася.' };
+                    }
+                },
+                {
+                    id: 'dbg_3',
+                    title: 'Помилка №3: Збій у логічній функції IF',
+                    points: 20,
+                    bugCell: 'C2',
+                    expectedType: 'wrong_sep',
+                    instruction: `
+                        <p>У комірці <b>C2</b> виникла помилка <code>#ПОМИЛКА!</code> під час перевірки прохідного балу (потрібно >= 10).</p>
+                        <p>Знайдіть помилку синтаксису в комірці <b>C2</b>, класифікуйте її та виправте.</p>
+                    `,
+                    targets: ['C2'],
+                    rows: 5, cols: 3,
+                    initialData: {
+                        A1: 'Учасник', B1: 'Бали', C1: 'Результат',
+                        A2: 'Гнатюк Іван', B2: 11, C2: '=IF(B2>=10: "Проходить"; "Ні")',
+                        A3: 'Дяченко Оля', B3: 8, C3: '=IF(B3>=10; "Проходить"; "Ні")'
+                    },
+                    hints: [
+                        'Уважно порівняйте роздільники аргументів у комірці C2 та правильній комірці C3.',
+                        'Двокрапка (:) використовується лише для діапазонів (напр. A1:A5), а аргументи функцій розділяються крапкою з комою (;).',
+                        'Оберіть «Неправильний роздільник аргументів» та замініть двокрапку після 10 на крапку з комою: =IF(B2>=10; "Проходить"; "Ні").'
+                    ],
+                    validate: (sheet, evalFn, errType) => {
+                        if (errType !== 'wrong_sep') return { ok: false, msg: 'Уточніть тип помилки у випадаючому списку.' };
+                        if (!String(sheet['C2'] || '').startsWith('=') || evalFn('C2') !== 'Проходить') {
+                            return { ok: false, msg: 'Виправте синтаксис формули в комірці C2.' };
+                        }
+                        return { ok: true, explanation: 'Причина помилки: замість роздільника аргументів «;» було помилково введено двокрапку «:», яка призначена для запису діапазонів.' };
+                    }
+                }
+            ],
+
+            // EXTRA MODE 3: NO HINTS CHALLENGE
+            challengeTasks: [
+                {
+                    id: 'chl_1',
+                    title: 'Бліц-задача 1: Середній чек та надбавка',
+                    points: 20,
+                    instruction: `
+                        <p>Без підказок! У комірці <b>B6</b> обчисліть середнє значення продажів за діапазоном <b>B2:B5</b>.</p>
+                        <p>У комірці <b>C2</b> обчисліть премію 5% від суми в <b>B2</b>, використовуючи ставку з <b>$E$1</b> (абсолютне посилання), і скопіюйте в <b>C3:C5</b>.</p>
+                    `,
+                    targets: ['B6', 'C2', 'C3', 'C4', 'C5'],
+                    rows: 7, cols: 5,
+                    initialData: {
+                        A1: 'Менеджер', B1: 'Продажі', C1: 'Премія', D1: 'Ставка:', E1: 0.05,
+                        A2: 'Олексій', B2: 1000,
+                        A3: 'Марина', B3: 1400,
+                        A4: 'Сергій', B4: 800,
+                        A5: 'Ірина', B5: 1200,
+                        A6: 'Середнє:'
+                    },
+                    validate: (sheet, evalFn) => {
+                        if (evalFn('B6') !== 1100 || !String(sheet['B6']).toUpperCase().includes('AVERAGE')) {
+                            return { ok: false, msg: 'Помилка в комірці B6.' };
+                        }
+                        const exps = [50, 70, 40, 60];
+                        for (let i = 0; i < 4; i++) {
+                            const c = `C${i + 2}`;
+                            if (!String(sheet[c]).toUpperCase().includes('$E$1') || evalFn(c) !== exps[i]) {
+                                return { ok: false, msg: `Помилка в комірці ${c}.` };
+                            }
+                        }
+                        return { ok: true, explanation: 'Бездоганно виконано без жодної підказки!' };
+                    }
+                },
+                {
+                    id: 'chl_2',
+                    title: 'Бліц-задача 2: Умовний підрахунок та сумування',
+                    points: 25,
+                    instruction: `
+                        <p>У комірці <b>E2</b> порахуйте кількість учнів, які набрали <b>більше або рівно 10 балів</b> (діапазон <b>B2:B6</b>).</p>
+                        <p>У комірці <b>E3</b> обчисліть суму балів лише для групи <b>"А"</b> (стовпець C — група, стовпець B — бали).</p>
+                    `,
+                    targets: ['E2', 'E3'],
+                    rows: 7, cols: 5,
+                    initialData: {
+                        A1: 'Учень', B1: 'Бал', C1: 'Група', D1: 'Запит', E1: 'Результат',
+                        A2: 'Учень 1', B2: 11, C2: 'А', D2: 'Бал >= 10 (к-сть)',
+                        A3: 'Учень 2', B3: 8, C3: 'Б', D3: 'Сума групи "А"',
+                        A4: 'Учень 3', B4: 10, C4: 'А',
+                        A5: 'Учень 4', B5: 12, C5: 'Б',
+                        A6: 'Учень 5', B6: 7, C6: 'А'
+                    },
+                    validate: (sheet, evalFn) => {
+                        if (evalFn('E2') !== 3 || !String(sheet['E2']).toUpperCase().includes('COUNTIF')) {
+                            return { ok: false, msg: 'Перевірте комірку E2.' };
+                        }
+                        if (evalFn('E3') !== 28 || !String(sheet['E3']).toUpperCase().includes('SUMIF')) {
+                            return { ok: false, msg: 'Перевірте комірку E3.' };
+                        }
+                        return { ok: true, explanation: 'Чудова робота з функціями COUNTIF та SUMIF!' };
+                    }
+                }
+            ],
+
+            // EXTRA MODE 2: SANDBOX DATASETS
+            sandboxDatasets: {
+                shopping: {
+                    name: 'Покупки в супермаркеті',
+                    rows: 10, cols: 6,
+                    data: {
+                        A1: 'Категорія', B1: 'Назва товару', C1: 'Ціна (грн)', D1: 'Кількість', E1: 'Сума (грн)',
+                        A2: 'Молочні', B2: 'Молоко 2,5%', C2: 38.5, D2: 2, E2: '=C2*D2',
+                        A3: 'Випічка', B3: 'Хліб житній', C3: 24, D3: 1, E3: '=C3*D3',
+                        A4: 'Фрукти', B4: 'Яблука Голден', C4: 32, D4: 3, E4: '=C4*D4',
+                        A5: 'Молочні', B5: 'Сир твердий', C5: 95, D5: 1, E5: '=C5*D5',
+                        A6: 'Фрукти', B6: 'Банани', C6: 58, D6: 2, E6: '=C6*D6',
+                        D7: 'РАЗОМ:', E7: '=SUM(E2:E6)',
+                        D8: 'Молочні:', E8: '=SUMIF(A2:A6;"Молочні";E2:E6)'
+                    }
+                },
+                grades: {
+                    name: 'Успішність 10-А класу',
+                    rows: 10, cols: 6,
+                    data: {
+                        A1: 'Прізвище', B1: 'Алгебра', C1: 'Фізика', D1: 'Інформатика', E1: 'Середній бал', F1: 'Рівень',
+                        A2: 'Бондаренко А.', B2: 10, C2: 9, D2: 12, E2: '=AVERAGE(B2:D2)', F2: '=IF(E2>=10;"Високий";"Достатній")',
+                        A3: 'Василенко М.', B3: 7, C3: 8, D3: 9, E3: '=AVERAGE(B3:D3)', F3: '=IF(E3>=10;"Високий";"Достатній")',
+                        A4: 'Григоренко О.', B4: 11, C4: 11, D4: 12, E4: '=AVERAGE(B4:D4)', F4: '=IF(E4>=10;"Високий";"Достатній")',
+                        A5: 'Данилюк С.', B5: 6, C5: 7, D5: 8, E5: '=AVERAGE(B5:D5)', F5: '=IF(E5>=10;"Високий";"Достатній")',
+                        A6: 'Максимум:', B6: '=MAX(B2:B5)', C6: '=MAX(C2:C5)', D6: '=MAX(D2:D5)'
+                    }
+                },
+                budget: {
+                    name: 'Бюджет класного заходу',
+                    rows: 10, cols: 6,
+                    data: {
+                        A1: 'Стаття витрат', B1: 'План (грн)', C1: 'Факт (грн)', D1: 'Різниця', E1: 'Статус',
+                        A2: 'Оренда залу', B2: 1500, C2: 1500, D2: '=B2-C2', E2: '=IF(D2>=0;"ОК";"Перевитрата")',
+                        A3: 'Фотозона', B3: 800, C3: 950, D3: '=B3-C3', E3: '=IF(D3>=0;"ОК";"Перевитрата")',
+                        A4: 'Солодкий стіл', B4: 1200, C4: 1050, D4: '=B4-C4', E4: '=IF(D4>=0;"ОК";"Перевитрата")',
+                        A5: 'Сувеніри', B5: 500, C5: 480, D5: '=B5-C5', E5: '=IF(D5>=0;"ОК";"Перевитрата")',
+                        A6: 'ВСЬОГО:', B6: '=SUM(B2:B5)', C6: '=SUM(C2:C5)', D6: '=B6-C6'
+                    }
+                },
+                survey: {
+                    name: 'Опитування учнів',
+                    rows: 10, cols: 5,
+                    data: {
+                        A1: 'Респондент', B1: 'Улюблений предмет', C1: 'Годин за ПК/день', D1: 'Статистика', E1: 'Значення',
+                        A2: 'Учень 1', B2: 'Інформатика', C2: 3, D2: 'Обрали Інформатику:', E2: '=COUNTIF(B2:B7;"Інформатика")',
+                        A3: 'Учень 2', B3: 'Математика', C3: 2, D3: 'Більше 3 год за ПК:', E3: '=COUNTIF(C2:C7;">3")',
+                        A4: 'Учень 3', B4: 'Інформатика', C4: 5, D4: 'Середній час за ПК:', E4: '=AVERAGE(C2:C7)',
+                        A5: 'Учень 4', B5: 'Історія', C5: 2,
+                        A6: 'Учень 5', B6: 'Інформатика', C6: 4,
+                        A7: 'Учень 6', B7: 'Англійська', C7: 3
+                    }
+                },
+                empty: {
+                    name: 'Порожня таблиця',
+                    rows: 12, cols: 7,
+                    data: {}
+                }
+            }
+        };
+
+        /**
+         * ============================================================================
+         * 3. APPLICATION CONTROLLER & STATE MANAGEMENT
+         * ============================================================================
+         */
+        const app = {
+            state: {
+                practiceMode: 'learn', // 'learn' | 'exam'
+                currentView: 'home',   // 'home' | 'workspace' | 'report'
+                activeModeType: null,  // 'level' | 'debug' | 'sandbox' | 'challenge'
+                activeLevelIndex: 0,
+                activeTaskIndex: 0,
+
+                // Spreadsheet runtime state
+                rows: 8,
+                cols: 6,
+                sheetData: {},         // raw strings/numbers: { "A1": "Ціна", "D2": "=B2*C2" }
+                selectedCell: 'A1',
+                isEditingFormula: false,
+                hintsUsedCurrent: 0,
+                taskSolvedCurrent: false,
+
+                // Drag-to-fill state
+                isDraggingFill: false,
+                dragTargetCells: [],
+
+                // Persistent progress (saved in localStorage)
+                progress: {
+                    completedTasks: {}, // taskId: { score, maxScore, hintsUsed }
+                    bugsFixed: 0,
+                    mistakesLog: []
+                }
+            },
+
+            init() {
+                this.loadProgress();
+                this.engine = new FormulaEngine((cellId) => this.state.sheetData[cellId]);
+                this.bindGlobalEvents();
+                this.renderHome();
+                this.updateHeaderStats();
+            },
+
+            // Persistence with safe try/catch
+            loadProgress() {
+                try {
+                    const saved = localStorage.getItem('informatics_lab_10_progress');
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        this.state.progress = { ...this.state.progress, ...parsed };
+                    }
+                } catch (e) {
+                    console.warn('Local storage unavailable', e);
+                }
+            },
+
+            saveProgress() {
+                try {
+                    localStorage.setItem('informatics_lab_10_progress', JSON.stringify(this.state.progress));
+                } catch (e) {
+                    console.warn('Could not save progress', e);
+                }
+                this.updateHeaderStats();
+            },
+
+            confirmResetProgress() {
+                this.openModal(
+                    'Скидання прогресу',
+                    'Ви дійсно бажаєте видалити всі збережені бали, пройдені рівні та статистику помилок? Цю дію неможливо скасувати.',
+                    () => {
+                        this.state.progress = { completedTasks: {}, bugsFixed: 0, mistakesLog: [] };
+                        this.saveProgress();
+                        this.renderHome();
+                        this.closeModal();
+                    }
+                );
+            },
+
+            // Calculate total scores & percentages
+            getStats() {
+                let totalPossible = 0;
+                CURRICULUM.levels.forEach(l => l.tasks.forEach(t => totalPossible += t.points));
+                CURRICULUM.debugTasks.forEach(t => totalPossible += t.points);
+                CURRICULUM.challengeTasks.forEach(t => totalPossible += t.points);
+
+                let earned = 0;
+                let completedCount = 0;
+                const totalTasksCount = CURRICULUM.levels.reduce((s, l) => s + l.tasks.length, 0) +
+                                        CURRICULUM.debugTasks.length + CURRICULUM.challengeTasks.length;
+
+                Object.values(this.state.progress.completedTasks).forEach(entry => {
+                    earned += entry.score;
+                    completedCount++;
+                });
+
+                const percent = totalPossible > 0 ? Math.round((earned / totalPossible) * 100) : 0;
+                return { earned, totalPossible, percent, completedCount, totalTasksCount };
+            },
+
+            updateHeaderStats() {
+                const stats = this.getStats();
+                document.getElementById('header-score').textContent = `${stats.earned} / ${stats.totalPossible}`;
+                document.getElementById('header-progress').textContent = `${stats.percent}%`;
+            },
+
+            // View Navigation
+            switchView(viewName) {
+                this.state.currentView = viewName;
+                ['view-home', 'view-workspace', 'view-report'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden');
+                });
+                document.getElementById(`view-${viewName}`).classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            showHome() {
+                this.renderHome();
+                this.switchView('home');
+                document.getElementById('header-mode-text').textContent = 'Головне меню';
+            },
+
+            showReport() {
+                this.renderReport();
+                this.switchView('report');
+                document.getElementById('header-mode-text').textContent = 'Підсумковий звіт';
+            },
+
+            setPracticeMode(mode) {
+                this.state.practiceMode = mode;
+                const btnLearn = document.getElementById('btn-mode-learn');
+                const btnExam = document.getElementById('btn-mode-exam');
+                if (mode === 'learn') {
+                    btnLearn.className = 'px-4 py-2.5 rounded-lg text-sm font-semibold transition flex flex-col items-center text-center border-2 border-blue-600 bg-blue-600 text-white shadow-sm';
+                    btnExam.className = 'px-4 py-2.5 rounded-lg text-sm font-semibold transition flex flex-col items-center text-center border-2 border-slate-200 bg-white text-slate-700 hover:border-slate-300';
+                } else {
+                    btnExam.className = 'px-4 py-2.5 rounded-lg text-sm font-semibold transition flex flex-col items-center text-center border-2 border-blue-600 bg-blue-600 text-white shadow-sm';
+                    btnLearn.className = 'px-4 py-2.5 rounded-lg text-sm font-semibold transition flex flex-col items-center text-center border-2 border-slate-200 bg-white text-slate-700 hover:border-slate-300';
+                }
+            },
+
+            // Render Dashboard Cards
+            renderHome() {
+                const grid = document.getElementById('levels-grid');
+                grid.innerHTML = '';
+
+                CURRICULUM.levels.forEach((lvl, idx) => {
+                    const totalTasks = lvl.tasks.length;
+                    const doneTasks = lvl.tasks.filter(t => this.state.progress.completedTasks[t.id]).length;
+                    const isDone = doneTasks === totalTasks;
+
+                    const card = document.createElement('div');
+                    card.className = `bg-white rounded-2xl p-5 border ${isDone ? 'border-emerald-300 bg-emerald-50/10' : 'border-slate-200'} shadow-sm hover:border-blue-400 transition flex flex-col justify-between`;
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-2.5 py-1 rounded-lg text-xs font-bold ${isDone ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-50 text-blue-700'}">
+                                    Рівень ${lvl.number}
+                                </span>
+                                <span class="text-xs font-semibold ${isDone ? 'text-emerald-600' : 'text-slate-400'}">
+                                    ${doneTasks}/${totalTasks} виконано ${isDone ? '✔' : ''}
+                                </span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-base mb-1">${lvl.title}</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-3">${lvl.description}</p>
+                            <div class="flex flex-wrap gap-1 mb-4">
+                                ${lvl.functions.map(fn => `<span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded font-mono-code text-[11px]">${fn}</span>`).join('')}
+                            </div>
+                        </div>
+                        <button onclick="app.startLevel(${idx})" class="w-full py-2.5 px-4 ${isDone ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-blue-600 hover:bg-blue-700'} text-white font-semibold rounded-xl text-sm transition shadow-sm">
+                            ${isDone ? 'Повторити рівень' : 'Розпочати рівень'}
+                        </button>
+                    `;
+                    grid.appendChild(card);
+                });
+            },
+
+            // Start a Standard Level (1-5)
+            startLevel(levelIdx, taskIdx = 0) {
+                this.state.activeModeType = 'level';
+                this.state.activeLevelIndex = levelIdx;
+                this.state.activeTaskIndex = taskIdx;
+                this.loadCurrentTask();
+                this.switchView('workspace');
+            },
+
+            // Start Extra Modes ('debug' | 'sandbox' | 'challenge')
+            startExtraMode(modeType) {
+                this.state.activeModeType = modeType;
+                this.state.activeTaskIndex = 0;
+                if (modeType === 'sandbox') {
+                    this.loadSandboxMode();
+                } else {
+                    this.loadCurrentTask();
+                }
+                this.switchView('workspace');
+            },
+
+            getCurrentTaskObj() {
+                if (this.state.activeModeType === 'level') {
+                    return CURRICULUM.levels[this.state.activeLevelIndex].tasks[this.state.activeTaskIndex];
+                }
+                if (this.state.activeModeType === 'debug') {
+                    return CURRICULUM.debugTasks[this.state.activeTaskIndex];
+                }
+                if (this.state.activeModeType === 'challenge') {
+                    return CURRICULUM.challengeTasks[this.state.activeTaskIndex];
+                }
+                return null;
+            },
+
+            getCurrentTaskList() {
+                if (this.state.activeModeType === 'level') return CURRICULUM.levels[this.state.activeLevelIndex].tasks;
+                if (this.state.activeModeType === 'debug') return CURRICULUM.debugTasks;
+                if (this.state.activeModeType === 'challenge') return CURRICULUM.challengeTasks;
+                return [];
+            },
+
+            // Load Task into Workspace
+            loadCurrentTask() {
+                const task = this.getCurrentTaskObj();
+                const list = this.getCurrentTaskList();
+                if (!task) return;
+
+                this.state.rows = task.rows || 8;
+                this.state.cols = task.cols || 6;
+                this.state.sheetData = JSON.parse(JSON.stringify(task.initialData || {}));
+                this.state.hintsUsedCurrent = 0;
+                this.state.taskSolvedCurrent = false;
+
+                // UI Visibility Setup
+                document.getElementById('sandbox-controls').classList.add('hidden');
+                document.getElementById('btn-check-task').classList.remove('hidden');
+                document.getElementById('btn-next-task').classList.add('hidden');
+                document.getElementById('task-targets-box').classList.remove('hidden');
+                document.getElementById('hints-container').classList.add('hidden');
+                document.getElementById('hints-list').innerHTML = '';
+
+                const fbBox = document.getElementById('feedback-box');
+                fbBox.classList.add('hidden');
+
+                // Mode-specific UI adjustments
+                const isNoHints = this.state.practiceMode === 'exam' || this.state.activeModeType === 'challenge';
+                const btnHint = document.getElementById('btn-hint');
+                const refCard = document.getElementById('learn-reference-card');
+
+                if (isNoHints) {
+                    btnHint.classList.add('hidden');
+                    refCard.classList.add('hidden');
+                } else {
+                    btnHint.classList.remove('hidden');
+                    refCard.classList.remove('hidden');
+                    document.getElementById('hint-counter').textContent = `(0/${(task.hints || []).length})`;
+                }
+
+                // Debug mode specific UI
+                const debugBox = document.getElementById('debug-reason-box');
+                if (this.state.activeModeType === 'debug') {
+                    debugBox.classList.remove('hidden');
+                    document.getElementById('debug-error-type').value = '';
+                } else {
+                    debugBox.classList.add('hidden');
+                }
+
+                // Header Badges & Titles
+                if (this.state.activeModeType === 'level') {
+                    const lvl = CURRICULUM.levels[this.state.activeLevelIndex];
+                    document.getElementById('ws-badge').textContent = `Рівень ${lvl.number}`;
+                    document.getElementById('ws-subtitle').textContent = lvl.title;
+                    document.getElementById('header-mode-text').textContent = `Рівень ${lvl.number} (${this.state.practiceMode === 'learn' ? 'Навчання' : 'Практика'})`;
+                } else if (this.state.activeModeType === 'debug') {
+                    document.getElementById('ws-badge').textContent = 'Знайди помилку';
+                    document.getElementById('ws-subtitle').textContent = 'Діагностика та виправлення формул';
+                    document.getElementById('header-mode-text').textContent = 'Режим: Знайди помилку';
+                } else if (this.state.activeModeType === 'challenge') {
+                    document.getElementById('ws-badge').textContent = 'Без підказок';
+                    document.getElementById('ws-subtitle').textContent = 'Контрольний практикум';
+                    document.getElementById('header-mode-text').textContent = 'Режим: Без підказок';
+                }
+
+                document.getElementById('ws-title').textContent = task.title;
+                document.getElementById('task-points-badge').textContent = `+${task.points} балів`;
+                document.getElementById('task-instruction').innerHTML = task.instruction;
+                document.getElementById('task-target-list').textContent = (task.targets || []).join(', ');
+
+                // Render Step Dots
+                const stepsDiv = document.getElementById('ws-steps-indicator');
+                stepsDiv.innerHTML = list.map((t, i) => {
+                    const active = i === this.state.activeTaskIndex;
+                    const done = !!this.state.progress.completedTasks[t.id];
+                    return `<button onclick="app.jumpToTask(${i})" class="w-7 h-7 rounded-lg text-xs font-bold transition ${
+                        active ? 'bg-blue-600 text-white shadow-sm' : done ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }">${i + 1}</button>`;
+                }).join('');
+
+                // Select first target cell
+                const firstTarget = (task.targets && task.targets[0]) || 'A1';
+                this.renderSpreadsheet();
+                this.selectCell(firstTarget);
+            },
+
+            jumpToTask(idx) {
+                this.state.activeTaskIndex = idx;
+                this.loadCurrentTask();
+            },
+
+            resetCurrentTask() {
+                if (this.state.activeModeType === 'sandbox') {
+                    const dsKey = document.getElementById('sandbox-dataset-select').value;
+                    this.loadSandboxDataset(dsKey);
+                } else {
+                    this.loadCurrentTask();
+                }
+            },
+
+            // Load Sandbox Mode
+            loadSandboxMode() {
+                document.getElementById('ws-badge').textContent = 'Експеримент';
+                document.getElementById('ws-title').textContent = 'Вільна цифрова лабораторія';
+                document.getElementById('ws-subtitle').textContent = 'Досліджуйте формули, змінюйте дані та спостерігайте перерахунок';
+                document.getElementById('header-mode-text').textContent = 'Режим: Експеримент';
+
+                document.getElementById('sandbox-controls').classList.remove('hidden');
+                document.getElementById('ws-steps-indicator').innerHTML = '';
+                document.getElementById('btn-check-task').classList.add('hidden');
+                document.getElementById('btn-hint').classList.add('hidden');
+                document.getElementById('btn-next-task').classList.add('hidden');
+                document.getElementById('task-targets-box').classList.add('hidden');
+                document.getElementById('debug-reason-box').classList.add('hidden');
+                document.getElementById('hints-container').classList.add('hidden');
+                document.getElementById('feedback-box').classList.add('hidden');
+                document.getElementById('learn-reference-card').classList.remove('hidden');
+                document.getElementById('task-points-badge').textContent = 'Вільний режим';
+
+                document.getElementById('task-instruction').innerHTML = `
+                    <p>Ви перебуваєте у режимі <b>вільного експерименту</b>. Тут немає обмежень!</p>
+                    <ul class="list-disc pl-4 space-y-1 text-slate-600">
+                        <li>Змінюйте числа у вхідних комірках і спостерігайте миттєвий перерахунок усіх залежних формул.</li>
+                        <li>Пробуйте писати власні формули: <code>=SUM(...)</code>, <code>=IF(...)</code>, <code>=COUNTIF(...)</code>, <code>=SUMIF(...)</code>.</li>
+                        <li>Перемикайте готові набори даних у верхній панелі.</li>
+                    </ul>
+                `;
+
+                document.getElementById('sandbox-dataset-select').value = 'shopping';
+                this.loadSandboxDataset('shopping');
+            },
+
+            loadSandboxDataset(key) {
+                const ds = CURRICULUM.sandboxDatasets[key] || CURRICULUM.sandboxDatasets.shopping;
+                this.state.rows = ds.rows;
+                this.state.cols = ds.cols;
+                this.state.sheetData = JSON.parse(JSON.stringify(ds.data));
+                this.renderSpreadsheet();
+                this.selectCell('A1');
+            },
+
+            // ========================================================================
+            // SPREADSHEET RENDERING & INTERACTION
+            // ========================================================================
+            formatDisplayValue(val) {
+                if (val === '' || val === null || val === undefined) return '';
+                if (typeof val === 'boolean') return val ? 'ІСТИНА' : 'ХИБНІСТЬ';
+                if (typeof val === 'number') {
+                    // Format nicely up to 2 decimal places if fractional, using Ukrainian comma
+                    const rounded = Math.round(val * 100) / 100;
+                    return String(rounded).replace('.', ',');
+                }
+                return String(val);
+            },
+
+            renderSpreadsheet() {
+                const table = document.getElementById('spreadsheet-table');
+                const task = this.getCurrentTaskObj();
+                const targets = (task && task.targets) ? task.targets : [];
+
+                let html = '<thead><tr class="bg-slate-100 text-slate-600 font-semibold text-xs select-none">';
+                html += '<th class="w-10 min-w-[40px] border border-slate-300 p-1.5 text-center bg-slate-200/70"></th>';
+                for (let c = 0; c < this.state.cols; c++) {
+                    const colLetter = FormulaEngine.indexToCol(c);
+                    html += `<th class="min-w-[110px] border border-slate-300 p-1.5 text-center">${colLetter}</th>`;
+                }
+                html += '</tr></thead><tbody>';
+
+                for (let r = 0; r < this.state.rows; r++) {
+                    const rowNum = r + 1;
+                    html += `<tr>`;
+                    html += `<td class="border border-slate-300 bg-slate-100 text-slate-600 font-semibold text-xs text-center p-1.5 select-none">${rowNum}</td>`;
+
+                    for (let c = 0; c < this.state.cols; c++) {
+                        const cellId = `${FormulaEngine.indexToCol(c)}${rowNum}`;
+                        const raw = this.state.sheetData[cellId];
+                        const isFormula = typeof raw === 'string' && raw.trim().startsWith('=');
+                        const evaluated = this.engine.evaluateCell(cellId);
+                        const displayVal = this.formatDisplayValue(evaluated);
+                        const isError = typeof evaluated === 'string' && evaluated.startsWith('#');
+                        const isSelected = this.state.selectedCell === cellId;
+                        const isTarget = targets.includes(cellId);
+
+                        // Determine cell styling based on content type
+                        let cellBg = 'bg-white';
+                        let textStyle = 'text-slate-800';
+                        let alignClass = typeof evaluated === 'number' ? 'text-right font-mono-code' : 'text-left';
+
+                        if (r === 0 && raw !== undefined && !isFormula) {
+                            cellBg = 'bg-slate-50 font-semibold';
+                        } else if (isFormula) {
+                            cellBg = 'bg-blue-50/40';
+                            textStyle = isError ? 'text-rose-600 font-bold' : 'text-blue-700 font-semibold';
+                        }
+
+                        if (isTarget && !this.state.taskSolvedCurrent) {
+                            cellBg += ' cell-target-highlight';
+                        }
+                        if (isSelected) {
+                            cellBg += ' cell-selected';
+                        }
+
+                        html += `
+                            <td id="cell-${cellId}"
+                                data-cell="${cellId}"
+                                onmousedown="app.handleCellMouseDown(event, '${cellId}')"
+                                onmouseenter="app.handleCellMouseEnter('${cellId}')"
+                                ondblclick="app.focusFormulaBar()"
+                                class="relative border border-slate-300 px-2.5 py-1.5 text-xs sm:text-sm cursor-cell transition-colors ${cellBg} ${textStyle} ${alignClass}">
+                                <div class="truncate min-h-[20px]">${this.escapeHtml(displayVal)}</div>
+                                ${isSelected ? `<div class="fill-handle" onmousedown="app.startFillDrag(event)"></div>` : ''}
+                            </td>
+                        `;
+                    }
+                    html += `</tr>`;
+                }
+                html += '</tbody>';
+                table.innerHTML = html;
+            },
+
+            escapeHtml(str) {
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+            },
+
+            selectCell(cellId) {
+                this.state.selectedCell = cellId;
+                document.getElementById('cell-address-box').textContent = cellId;
+                const raw = this.state.sheetData[cellId];
+                document.getElementById('formula-input').value = raw !== undefined ? raw : '';
+                this.renderSpreadsheet();
+            },
+
+            handleCellMouseDown(e, cellId) {
+                // If user is currently typing a formula starting with '=' and clicks another cell, insert its reference!
+                const input = document.getElementById('formula-input');
+                const val = input.value;
+                if (document.activeElement === input && val.startsWith('=') && cellId !== this.state.selectedCell) {
+                    e.preventDefault();
+                    this.insertToken(cellId);
+                    return;
+                }
+
+                // Commit any pending edit before switching cell
+                if (this.state.selectedCell !== cellId && this.state.isEditingFormula) {
+                    this.commitFormulaInput(false);
+                }
+                this.selectCell(cellId);
+            },
+
+            focusFormulaBar() {
+                const input = document.getElementById('formula-input');
+                input.focus();
+                this.state.isEditingFormula = true;
+            },
+
+            insertToken(token) {
+                const input = document.getElementById('formula-input');
+                input.focus();
+                const start = input.selectionStart || input.value.length;
+                const end = input.selectionEnd || input.value.length;
+                const text = input.value;
+                input.value = text.slice(0, start) + token + text.slice(end);
+                const newPos = start + token.length;
+                input.setSelectionRange(newPos, newPos);
+                this.state.isEditingFormula = true;
+            },
+
+            // Toggle $A$1 on the reference under cursor in formula bar
+            toggleAbsoluteRef() {
+                const input = document.getElementById('formula-input');
+                input.focus();
+                const pos = input.selectionStart || input.value.length;
+                const text = input.value;
+                // Find cell reference touching cursor
+                const regex = /\$?[A-Za-z]+\$?\d+/g;
+                let match;
+                while ((match = regex.exec(text)) !== null) {
+                    if (pos >= match.index && pos <= match.index + match[0].length) {
+                        const parsed = FormulaEngine.parseAddress(match[0]);
+                        if (parsed) {
+                            const makeAbs = !(parsed.absCol && parsed.absRow);
+                            parsed.absCol = makeAbs;
+                            parsed.absRow = makeAbs;
+                            const replacement = FormulaEngine.formatAddress(parsed);
+                            input.value = text.slice(0, match.index) + replacement + text.slice(match.index + match[0].length);
+                            input.setSelectionRange(match.index + replacement.length, match.index + replacement.length);
+                            return;
+                        }
+                    }
+                }
+            },
+
+            commitFormulaInput(reRender = true) {
+                const cellId = this.state.selectedCell;
+                const rawVal = document.getElementById('formula-input').value.trim();
+                if (rawVal === '') {
+                    delete this.state.sheetData[cellId];
+                } else {
+                    // Store numeric strings as numbers unless they start with '='
+                    if (!rawVal.startsWith('=') && /^-?\d+([.,]\d+)?$/.test(rawVal)) {
+                        this.state.sheetData[cellId] = parseFloat(rawVal.replace(',', '.'));
+                    } else {
+                        this.state.sheetData[cellId] = rawVal;
+                    }
+                }
+                this.state.isEditingFormula = false;
+                if (reRender) this.renderSpreadsheet();
+            },
+
+            cancelFormulaInput() {
+                const raw = this.state.sheetData[this.state.selectedCell];
+                document.getElementById('formula-input').value = raw !== undefined ? raw : '';
+                this.state.isEditingFormula = false;
+                document.getElementById('formula-input').blur();
+            },
+
+            // Drag Fill Handle Logic (Auto-copy formulas down/across with relative reference shifting)
+            startFillDrag(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                this.state.isDraggingFill = true;
+                this.state.dragTargetCells = [];
+            },
+
+            handleCellMouseEnter(cellId) {
+                if (!this.state.isDraggingFill) return;
+                const startParsed = FormulaEngine.parseAddress(this.state.selectedCell);
+                const currParsed = FormulaEngine.parseAddress(cellId);
+                if (!startParsed || !currParsed) return;
+
+                // Clear old highlights
+                document.querySelectorAll('.cell-drag-over').forEach(el => el.classList.remove('cell-drag-over'));
+                this.state.dragTargetCells = [];
+
+                // Support vertical or horizontal drag
+                if (currParsed.col === startParsed.col && currParsed.row !== startParsed.row) {
+                    const step = currParsed.row > startParsed.row ? 1 : -1;
+                    for (let r = startParsed.row + step; r !== currParsed.row + step; r += step) {
+                        const cid = `${FormulaEngine.indexToCol(startParsed.col)}${r + 1}`;
+                        this.state.dragTargetCells.push(cid);
+                        const el = document.getElementById(`cell-${cid}`);
+                        if (el) el.classList.add('cell-drag-over');
+                    }
+                } else if (currParsed.row === startParsed.row && currParsed.col !== startParsed.col) {
+                    const step = currParsed.col > startParsed.col ? 1 : -1;
+                    for (let c = startParsed.col + step; c !== currParsed.col + step; c += step) {
+                        const cid = `${FormulaEngine.indexToCol(c)}${startParsed.row + 1}`;
+                        this.state.dragTargetCells.push(cid);
+                        const el = document.getElementById(`cell-${cid}`);
+                        if (el) el.classList.add('cell-drag-over');
+                    }
+                }
+            },
+
+            finishFillDrag() {
+                if (!this.state.isDraggingFill) return;
+                this.state.isDraggingFill = false;
+
+                const sourceId = this.state.selectedCell;
+                const sourceParsed = FormulaEngine.parseAddress(sourceId);
+                const sourceVal = this.state.sheetData[sourceId];
+
+                if (sourceParsed && sourceVal !== undefined && this.state.dragTargetCells.length > 0) {
+                    for (const targetId of this.state.dragTargetCells) {
+                        const targetParsed = FormulaEngine.parseAddress(targetId);
+                        const dCol = targetParsed.col - sourceParsed.col;
+                        const dRow = targetParsed.row - sourceParsed.row;
+                        if (typeof sourceVal === 'string' && sourceVal.startsWith('=')) {
+                            this.state.sheetData[targetId] = FormulaEngine.shiftFormula(sourceVal, dCol, dRow);
+                        } else {
+                            this.state.sheetData[targetId] = sourceVal;
+                        }
+                    }
+                }
+                this.state.dragTargetCells = [];
+                this.renderSpreadsheet();
+            },
+
+            bindGlobalEvents() {
+                const input = document.getElementById('formula-input');
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.commitFormulaInput();
+                        // Move selection down one row
+                        const p = FormulaEngine.parseAddress(this.state.selectedCell);
+                        if (p && p.row + 1 < this.state.rows) {
+                            this.selectCell(`${FormulaEngine.indexToCol(p.col)}${p.row + 2}`);
+                        }
+                    } else if (e.key === 'Escape') {
+                        e.preventDefault();
+                        this.cancelFormulaInput();
+                    }
+                });
+
+                input.addEventListener('input', () => {
+                    this.state.isEditingFormula = true;
+                });
+
+                window.addEventListener('mouseup', () => {
+                    if (this.state.isDraggingFill) {
+                        this.finishFillDrag();
+                    }
+                });
+            },
+
+            // ========================================================================
+            // HINTS & VALIDATION ENGINE
+            // ========================================================================
+            requestHint() {
+                const task = this.getCurrentTaskObj();
+                if (!task || !task.hints) return;
+                if (this.state.hintsUsedCurrent >= task.hints.length) return;
+
+                const hintText = task.hints[this.state.hintsUsedCurrent];
+                this.state.hintsUsedCurrent++;
+
+                document.getElementById('hints-container').classList.remove('hidden');
+                const list = document.getElementById('hints-list');
+                const item = document.createElement('div');
+                item.className = 'p-2.5 bg-amber-50 rounded-lg border border-amber-100';
+                item.innerHTML = `<span class="font-bold text-amber-800">Підказка ${this.state.hintsUsedCurrent}:</span> ${hintText}`;
+                list.appendChild(item);
+
+                document.getElementById('hint-counter').textContent = `(${this.state.hintsUsedCurrent}/${task.hints.length})`;
+                if (this.state.hintsUsedCurrent >= task.hints.length) {
+                    document.getElementById('btn-hint').disabled = true;
+                    document.getElementById('btn-hint').classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            },
+
+            checkCurrentTask() {
+                // Ensure any typed formula in the bar is committed first
+                if (this.state.isEditingFormula) {
+                    this.commitFormulaInput();
+                }
+
+                const task = this.getCurrentTaskObj();
+                if (!task) return;
+
+                const errType = document.getElementById('debug-error-type').value;
+                const result = task.validate(
+                    this.state.sheetData,
+                    (cid) => this.engine.evaluateCell(cid),
+                    errType
+                );
+
+                const fbBox = document.getElementById('feedback-box');
+                fbBox.classList.remove('hidden');
+
+                if (result.ok) {
+                    // Calculate score with hint penalty (minimum 40% of points)
+                    const penalty = this.state.hintsUsedCurrent * 2;
+                    const earnedScore = Math.max(Math.ceil(task.points * 0.4), task.points - penalty);
+
+                    // Save if not already solved with higher score
+                    const prev = this.state.progress.completedTasks[task.id];
+                    if (!prev || earnedScore > prev.score) {
+                        this.state.progress.completedTasks[task.id] = {
+                            score: earnedScore,
+                            maxScore: task.points,
+                            hintsUsed: this.state.hintsUsedCurrent
+                        };
+                    }
+                    if (this.state.activeModeType === 'debug' && !prev) {
+                        this.state.progress.bugsFixed = (this.state.progress.bugsFixed || 0) + 1;
+                    }
+                    this.saveProgress();
+
+                    this.state.taskSolvedCurrent = true;
+                    this.renderSpreadsheet();
+
+                    fbBox.className = 'rounded-xl p-3.5 text-xs leading-relaxed border bg-emerald-50 border-emerald-200 text-emerald-900';
+                    fbBox.innerHTML = `
+                        <div class="font-bold text-emerald-800 text-sm mb-1">🎉 Правильно! (+${earnedScore} балів)</div>
+                        <p>${result.explanation}</p>
+                    `;
+
+                    document.getElementById('btn-next-task').classList.remove('hidden');
+                } else {
+                    // Log mistake for final report recommendations
+                    if (!this.state.progress.mistakesLog.includes(task.title)) {
+                        this.state.progress.mistakesLog.push(task.title);
+                        this.saveProgress();
+                    }
+
+                    fbBox.className = 'rounded-xl p-3.5 text-xs leading-relaxed border bg-rose-50 border-rose-200 text-rose-900';
+                    fbBox.innerHTML = `
+                        <div class="font-bold text-rose-800 text-sm mb-1">⚠️ Є неточність</div>
+                        <p>${result.msg}</p>
+                        <p class="mt-1.5 text-[11px] opacity-80">Спробуйте виправити формулу та перевірити ще раз (або скористайтеся підказкою).</p>
+                    `;
+                }
+            },
+
+            nextTask() {
+                const list = this.getCurrentTaskList();
+                if (this.state.activeTaskIndex + 1 < list.length) {
+                    this.state.activeTaskIndex++;
+                    this.loadCurrentTask();
+                } else if (this.state.activeModeType === 'level' && this.state.activeLevelIndex + 1 < CURRICULUM.levels.length) {
+                    this.state.activeLevelIndex++;
+                    this.state.activeTaskIndex = 0;
+                    this.loadCurrentTask();
+                } else {
+                    this.showReport();
+                }
+            },
+
+            // ========================================================================
+            // FINAL ASSESSMENT REPORT RENDERING
+            // ========================================================================
+            renderReport() {
+                const stats = this.getStats();
+                document.getElementById('rep-score').textContent = `${stats.earned} / ${stats.totalPossible}`;
+                document.getElementById('rep-percent').textContent = `${stats.percent}%`;
+                document.getElementById('rep-bugs').textContent = this.state.progress.bugsFixed || 0;
+
+                // Determine Ukrainian Competency Grade
+                let grade = 'Початковий рівень';
+                if (stats.percent >= 90) grade = 'Високий рівень (10–12 балів)';
+                else if (stats.percent >= 70) grade = 'Достатній рівень (7–9 балів)';
+                else if (stats.percent >= 40) grade = 'Середній рівень (4–6 балів)';
+                document.getElementById('rep-grade').textContent = grade;
+
+                // Mastered Functions
+                const masteredSet = new Set();
+                CURRICULUM.levels.forEach(lvl => {
+                    const anyDone = lvl.tasks.some(t => this.state.progress.completedTasks[t.id]);
+                    if (anyDone) lvl.functions.forEach(f => masteredSet.add(f));
+                });
+                const masteredContainer = document.getElementById('rep-mastered');
+                if (masteredSet.size === 0) {
+                    masteredContainer.innerHTML = '<span class="text-xs text-slate-400">Ще немає опанованих функцій. Розпочніть з Рівня 1!</span>';
+                } else {
+                    masteredContainer.innerHTML = Array.from(masteredSet).map(fn =>
+                        `<span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg font-mono-code text-xs font-semibold">${fn}</span>`
+                    ).join('');
+                }
+
+                // Recommendations
+                const recContainer = document.getElementById('rep-recommendations');
+                const recs = [];
+                if (stats.percent < 100) {
+                    recs.push('• Пройдіть усі 5 рівнів, щоб закріпити навички роботи з логічними та умовними функціями.');
+                }
+                if ((this.state.progress.bugsFixed || 0) < CURRICULUM.debugTasks.length) {
+                    recs.push('• Спробуйте режим «Знайди помилку» — це допоможе швидко знаходити синтаксичні збої у власних таблицях.');
+                }
+                if (this.state.progress.mistakesLog.length > 0) {
+                    recs.push(`• Зверніть увагу на теми, де виникали труднощі: <b>${this.state.progress.mistakesLog.slice(-3).join(', ')}</b>.`);
+                } else {
+                    recs.push('• Чудова точність! Ви не припускалися помилок під час перевірок.');
+                }
+                recContainer.innerHTML = recs.map(r => `<p>${r}</p>`).join('');
+
+                // Breakdown Table
+                const tbody = document.getElementById('rep-table-body');
+                tbody.innerHTML = '';
+
+                const sections = [
+                    ...CURRICULUM.levels.map((l, idx) => ({
+                        name: `Рівень ${l.number}: ${l.title}`,
+                        tasks: l.tasks,
+                        action: () => this.startLevel(idx)
+                    })),
+                    {
+                        name: 'Режим «Знайди помилку»',
+                        tasks: CURRICULUM.debugTasks,
+                        action: () => this.startExtraMode('debug')
+                    },
+                    {
+                        name: 'Режим «Без підказок»',
+                        tasks: CURRICULUM.challengeTasks,
+                        action: () => this.startExtraMode('challenge')
+                    }
+                ];
+
+                sections.forEach((sec, sIdx) => {
+                    const maxPts = sec.tasks.reduce((s, t) => s + t.points, 0);
+                    const earnedPts = sec.tasks.reduce((s, t) => s + (this.state.progress.completedTasks[t.id]?.score || 0), 0);
+                    const doneCnt = sec.tasks.filter(t => this.state.progress.completedTasks[t.id]).length;
+                    const isComplete = doneCnt === sec.tasks.length;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="p-3 font-medium text-slate-900">${sec.name}</td>
+                        <td class="p-3">
+                            <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold ${isComplete ? 'bg-emerald-100 text-emerald-700' : doneCnt > 0 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500'}">
+                                ${isComplete ? 'Завершено' : doneCnt > 0 ? 'В процесі' : 'Не розпочато'}
+                            </span>
+                        </td>
+                        <td class="p-3 text-slate-600">${doneCnt} з ${sec.tasks.length}</td>
+                        <td class="p-3 font-bold text-blue-600">${earnedPts} / ${maxPts}</td>
+                        <td class="p-3 text-right">
+                            <button id="rep-btn-${sIdx}" class="text-blue-600 hover:underline font-semibold">Перейти →</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                    document.getElementById(`rep-btn-${sIdx}`).onclick = sec.action;
+                });
+            },
+
+            // Custom Modal Helpers
+            openModal(title, body, onConfirm) {
+                document.getElementById('modal-title').textContent = title;
+                document.getElementById('modal-body').textContent = body;
+                document.getElementById('custom-modal').classList.remove('hidden');
+                document.getElementById('modal-confirm').onclick = onConfirm;
+            },
+
+            closeModal() {
+                document.getElementById('custom-modal').classList.add('hidden');
+            }
+        };
+
+        // Boot application on window load
+        window.onload = () => app.init();
+    </script>
+</body>
+</html>
