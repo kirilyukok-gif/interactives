@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Математичні функції в Excel</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#f4f7fc;--grid:#dce5f4;--ink:#1d3bb8;--text:#17203a;--card:#fff;--line:#c5d1ea;--hi:#ffd84d;--pink:#e0457b;--ok:#13875a;--bad:#c93a3a;--mut:#5a6685;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1526;--grid:#18233d;--ink:#8fa8ff;--text:#e8edfb;--card:#16203a;--line:#2c3b60;--hi:#ffd84d;--pink:#ff6b9d;--ok:#4cd69a;--bad:#ff7b7b;--mut:#9aa7c7;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1526;--grid:#18233d;--ink:#8fa8ff;--text:#e8edfb;--card:#16203a;--line:#2c3b60;--hi:#ffd84d;--pink:#ff6b9d;--ok:#4cd69a;--bad:#ff7b7b;--mut:#9aa7c7;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;font:400 17px/1.55 Onest,system-ui,Arial,sans-serif;color:var(--text);background-color:var(--bg);
+background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+main{max-width:860px;margin:0 auto;padding:22px 16px 48px}
+h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:8px 0 6px;font-weight:800;color:var(--ink)}
+.lead{color:var(--mut);margin:0 0 18px;max-width:60ch}
+nav{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px}
+nav button{flex:none;font:600 15px Onest,sans-serif;padding:9px 14px;border:2px solid var(--ink);border-radius:8px;background:var(--card);color:var(--ink);cursor:pointer}
+nav button[aria-selected=true]{background:var(--ink);color:var(--bg)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.panel{display:none;background:var(--card);border:2px solid var(--ink);border-radius:12px;padding:20px;box-shadow:6px 6px 0 var(--ink)}
+.panel.on{display:block}
+h2{margin:0 0 4px;font-size:24px}
+.fbar{display:flex;align-items:stretch;border:2px solid var(--line);border-radius:8px;overflow:hidden;margin:14px 0;font:600 18px ui-monospace,Consolas,monospace}
+.fbar b{background:var(--ink);color:var(--bg);padding:8px 12px;font-style:italic;font-family:Onest,serif}
+.fbar span{padding:8px 12px;overflow-x:auto;white-space:nowrap}
+.row{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:end;margin:12px 0}
+label{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:14px;color:var(--mut)}
+input[type=number]{font:600 18px Onest,sans-serif;width:110px;padding:7px 9px;border:2px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text)}
+input[type=range]{width:min(260px,70vw);accent-color:var(--ink)}
+.res{font-size:clamp(34px,8vw,54px);font-weight:800;color:var(--ink);line-height:1.1;margin:10px 0 4px;overflow-wrap:anywhere}
+.note{background:color-mix(in srgb,var(--hi) 30%,transparent);border-left:5px solid var(--hi);padding:8px 12px;border-radius:0 8px 8px 0;margin:10px 0}
+.vis{margin:12px 0;min-height:40px}
+.sq{display:grid;gap:3px;width:max-content;max-width:100%}
+.sq i{width:20px;height:20px;background:var(--ink);border-radius:3px}
+.dots{display:flex;flex-wrap:wrap;gap:10px}
+.grp{display:flex;flex-wrap:wrap;gap:4px;padding:6px;border:2px dashed var(--line);border-radius:10px;max-width:130px}
+.grp.rem{border-color:var(--pink);border-style:solid}
+.grp i{width:14px;height:14px;border-radius:50%;background:var(--ink)}
+.grp.rem i{background:var(--pink)}
+.line{position:relative;height:70px;margin:10px 14px 0}
+.line .ax{position:absolute;left:0;right:0;top:28px;height:3px;background:var(--text)}
+.line .tk{position:absolute;top:22px;width:2px;height:15px;background:var(--text)}
+.line .tk em{position:absolute;top:18px;left:-12px;width:26px;text-align:center;font:600 12px Onest;font-style:normal;color:var(--mut)}
+.line .bar{position:absolute;top:24px;height:11px;background:var(--hi);opacity:.9;border-radius:6px}
+.line .pt{position:absolute;top:19px;width:20px;height:20px;margin-left:-10px;border-radius:50%;background:var(--pink);border:3px solid var(--card)}
+.btn{font:700 17px Onest,sans-serif;padding:10px 18px;border-radius:8px;border:2px solid var(--ink);background:var(--hi);color:#17203a;cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chips span{padding:3px 10px;border:2px solid var(--line);border-radius:99px;font-weight:600}
+.quiz{margin-top:20px;border-top:2px dashed var(--line);padding-top:14px}
+.quiz p{margin:0 0 8px;font-weight:700}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts button{font:600 16px Onest;padding:8px 14px;border:2px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);cursor:pointer}
+.opts button.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 22%,transparent)}
+.opts button.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 22%,transparent)}
+.fb{min-height:24px;margin-top:6px;font-weight:600}
+.syn{margin:14px 0 0;padding:12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--bg)}
+.sig{font:700 clamp(18px,4.6vw,24px) ui-monospace,Consolas,monospace;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.sig .fn{color:var(--text)}
+.a0{color:var(--ink)}.a1{color:var(--pink)}.a2{color:var(--ok)}
+.sig u{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:3px}
+.syn ul{margin:8px 0 0;padding-left:20px;font-size:15px}
+.syn li{margin:3px 0}.syn li b{font-family:ui-monospace,Consolas,monospace}
+.syn small{display:block;margin-top:6px;color:var(--mut);font-size:13px}
+table{border-collapse:collapse;margin-top:8px;font-size:15px}td,th{border:2px solid var(--line);padding:4px 10px;text-align:left}
+</style>
+</head>
+<body>
+<main>
+<h1>Математичні функції в Excel</h1>
+<p class="lead">Функція — це готовий «помічник» у таблиці: даєш числа, він повертає результат. Обери функцію, крути повзунки й дивись, що відбувається.</p>
+<nav id="tabs" role="tablist"></nav>
+<div id="panels"></div>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const f=n=>Number.isFinite(n)?String(+n.toFixed(10)).replace('.',','):'—';
+const num=(id)=>parseFloat($('#'+id).value);
+const F=[
+{id:'power',n:'POWER',ua:'СТЕПІНЬ',t:'Піднесення до степеня',d:'Множить число саме на себе вказану кількість разів.',
+ html:`<div class=row><label>Основа<input type=number id=pa value=3 step=any></label><label>Показник: <b id=pnv>2</b><input type=range id=pn min=0 max=6 value=2></label></div>`,
+ q:['Чому дорівнює =POWER(2;5)?',['10','25','32'],2,'2·2·2·2·2 = 32. Це не 2·5!']},
+{id:'round',n:'ROUND',ua:'ОКРУГЛ',t:'Округлення числа',d:'Залишає потрібну кількість цифр після коми. Від’ємний другий аргумент округлює до десятків, сотень.',
+ html:`<div class=row><label>Число<input type=number id=ra value=3.14159 step=any></label><label>Цифр після коми: <b id=rnv>2</b><input type=range id=rn min=-2 max=4 value=2></label></div>`,
+ q:['Чому дорівнює =ROUND(7,456;1)?',['7,4','7,5','7,46'],1,'Наступна цифра 5, тому попередню збільшуємо: 7,4 → 7,5.']},
+{id:'abs',n:'ABS',ua:'ABS',t:'Модуль числа',d:'Відстань від числа до нуля. Вона ніколи не буває від’ємною.',
+ html:`<div class=row><label>Число: <b id=anv>-6</b><input type=range id=an min=-10 max=10 step=1 value=-6></label></div>`,
+ q:['Чому дорівнює =ABS(-15)?',['-15','15','0'],1,'Від −15 до нуля — 15 кроків.']},
+{id:'rand',n:'RAND',ua:'СЛЧИС',t:'Випадкове число',d:'Повертає випадкове число від 0 до 1. Нове значення з’являється щоразу, коли таблиця перераховується (наприклад, клавіша F9).',
+ html:`<button class=btn id=rb>Перерахувати (F9)</button><div class=chips id=rh></div><p><b>Кубик.</b> Щоб отримати цілі числа від мін до макс, множимо й округлюємо:</p><div class=row><label>Мін<input type=number id=rmin value=1></label><label>Макс<input type=number id=rmax value=6></label><button class=btn id=rb2>Кинути</button></div>`,
+ q:['Яка формула дасть випадкове ціле від 1 до 10?',['=RAND()*10','=ROUND(RAND()*9+1;0)','=ABS(RAND())'],1,'RAND()*9 дає 0…9, +1 зсуває до 1…10, ROUND робить число цілим.']},
+{id:'mod',n:'MOD',ua:'ОСТАТ',t:'Остача від ділення',d:'Ділимо націло й дивимось, що залишилось. Зручно, щоб перевірити парність або кратність.',
+ html:`<div class=row><label>Ділене<input type=number id=ma value=17 min=0 max=60></label><label>Дільник<input type=number id=mb value=5 min=1 max=20></label></div>`,
+ q:['Яка остача =MOD(20;6)?',['2','3','4'],0,'20 = 6·3 + 2.']},
+{id:'product',n:'PRODUCT',ua:'ДОБУТОК',t:'Добуток чисел',d:'Перемножує всі аргументи. Порожні клітинки пропускає — на відміну від зірочки в формулі.',
+ html:`<div class=row>${[2,3,4,'',''].map((v,i)=>`<label>A${i+1}<input type=number id=pr${i} value="${v}" step=any></label>`).join('')}</div>`,
+ q:['Що поверне =PRODUCT(5;0;100)?',['500','0','105'],1,'Якщо серед множників є нуль, добуток дорівнює нулю.']}
+];
+const SYN={
+power:['POWER','СТЕПІНЬ',[['число','основа — число, яке множимо саме на себе'],['степінь','показник — скільки разів число береться множником']]],
+round:['ROUND','ОКРУГЛ',[['число','що округлюємо'],['кількість_розрядів','скільки цифр залишити після коми (0 — до цілого, від’ємне — до десятків, сотень)']]],
+abs:['ABS','ABS',[['число','число, модуль якого шукаємо']]],
+rand:['RAND','СЛЧИС',[]],
+mod:['MOD','ОСТАТ',[['число','ділене — те, що ділимо'],['дільник','на що ділимо (не може бути 0)']]],
+product:['PRODUCT','ДОБУТОК',[['число1','перший множник'],['число2','другий множник'],['…','далі скільки потрібно: можна додати ще множники або діапазон, наприклад A1:A10']]]
+};
+function synHTML(id){const[n,u,a]=SYN[id];
+ const arg=(x,i)=>`<u class=a${Math.min(i,2)}>${x[0]}</u>`;
+ const sig=`<span class=fn>${n}</span>(${a.map(arg).join('; ')})`;
+ const li=a.map((x,i)=>`<li><b class=a${Math.min(i,2)}>${x[0]}</b> — ${x[1]}</li>`).join('')||'<li>Аргументів немає, але дужки обов’язкові.</li>';
+ return `<div class=syn><div class=sig>=${sig}</div><ul>${li}</ul><small>В українській версії Excel: ${u}(${a.map(x=>x[0]).join('; ')})</small></div>`}
+const tabs=$('#tabs'),P=$('#panels');
+F.forEach((o,i)=>{
+ const b=document.createElement('button');b.textContent=o.n;b.setAttribute('role','tab');b.onclick=()=>show(i);tabs.append(b);
+ const s=document.createElement('section');s.className='panel';s.id='p-'+o.id;
+ const [qt,opts,ans,ex]=o.q;
+ s.innerHTML=`<h2>${o.t}</h2><p style="margin:0;color:var(--mut)">${o.d}</p>
+ ${synHTML(o.id)}<div class=fbar><b>fx</b><span id=${o.id}-f></span></div>${o.html}
+ <div class=res id=${o.id}-r></div><div class=vis id=${o.id}-v></div><div class=note id=${o.id}-n></div>
+ <div class=quiz><p>Перевір себе: ${qt}</p><div class=opts>${opts.map((x,j)=>`<button data-j=${j}>${x}</button>`).join('')}</div><div class=fb></div></div>`;
+ s.querySelectorAll('.opts button').forEach(bt=>bt.onclick=()=>{
+  const ok=+bt.dataset.j===ans;bt.className=ok?'ok':'no';
+  s.querySelector('.fb').textContent=ok?'Правильно! '+ex:'Ще раз подумай — це не те.';
+ });
+ P.append(s);
+});
+function show(i){tabs.querySelectorAll('button').forEach((b,j)=>b.setAttribute('aria-selected',i==j));
+ P.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('on',i==j));try{history.replaceState(null,'','#'+F[i].id)}catch(e){}}
+const set=(id,k,v)=>$('#'+id+'-'+k).innerHTML=v;
+const ua=(o)=>`<small style="font:400 13px Onest;color:var(--mut)"> (укр.: ${o})</small>`;
+
+function power(){const a=num('pa'),n=+$('#pn').value;$('#pnv').textContent=n;
+ set('power','f',`=POWER(${f(a)};${n})`);set('power','r',`${f(a)}<sup>${n}</sup> = ${f(Math.pow(a,n))}`);
+ const ex=n==0?'1 (будь-яке число в степені 0 дорівнює 1)':Array(n).fill(f(a)<0?'('+f(a)+')':f(a)).join(' × ')+' = '+f(Math.pow(a,n));
+ set('power','n',ex+'<br>В українському Excel ця функція має ім’я <b>СТЕПІНЬ</b>. Те саме робить знак ^ : =3^2');
+ set('power','v',n==2&&a>0&&a<=12&&Number.isInteger(a)?`<div class=sq style="grid-template-columns:repeat(${a},20px)">${'<i></i>'.repeat(a*a)}</div><p style="color:var(--mut)">Квадрат зі стороною ${a} складається з ${a*a} клітинок — тому «в квадраті».</p>`:'<span style="color:var(--mut)">Постав показник 2 і ціле додатне число до 12 — побачиш квадрат.</span>');}
+function rnd(x,d){const m=Math.pow(10,d),s=Math.sign(x);return s*Math.round(Math.abs(x)*m+1e-9)/m}
+function round(){const x=num('ra'),d=+$('#rn').value;$('#rnv').textContent=d;
+ set('round','f',`=ROUND(${f(x)};${d})`);set('round','r',f(rnd(x,d)));
+ const w=d>0?`${d} цифр(и) після коми`:d==0?'до цілого':d==-1?'до десятків':'до сотень';
+ set('round','n',`Округлюємо ${w}. Дивимось на наступну цифру: якщо вона 5 або більше — збільшуємо, якщо менше — залишаємо.`);
+ set('round','v',`<table><tr><th>Було</th><th>Стало</th></tr><tr><td>${f(x)}</td><td>${f(rnd(x,d))}</td></tr><tr><td>Різниця</td><td>${f(Math.abs(x-rnd(x,d)))}</td></tr></table>`);}
+function abs(){const x=+$('#an').value;$('#anv').textContent=x;
+ set('abs','f',`=ABS(${x})`);set('abs','r',`|${x}| = ${Math.abs(x)}`);
+ let h='<div class=line><div class=ax></div>';for(let k=-10;k<=10;k+=5)h+=`<div class=tk style="left:${(k+10)*5}%"><em>${k}</em></div>`;
+ h+=`<div class=bar style="left:${(Math.min(0,x)+10)*5}%;width:${Math.abs(x)*5}%"></div><div class=pt style="left:${(x+10)*5}%"></div></div>`;
+ set('abs','v',h);set('abs','n',`Жовта смужка — відстань від 0 до ${x}. Її довжина: <b>${Math.abs(x)}</b>. Мінус «зникає», бо відстань не буває від’ємною.`);}
+const hist=[];
+function randAdd(v,txt){hist.unshift(txt);hist.length=Math.min(hist.length,8);set('rand','f',txt.f);set('rand','r',txt.v);
+ $('#rh').innerHTML=hist.map(h=>`<span>${h.v}</span>`).join('');}
+function rand(){const v=Math.random();randAdd(v,{f:'=RAND()',v:f(+v.toFixed(4))});
+ set('rand','n','Щоразу нове число від 0 до 1. Спробуй кілька разів: два однакові поспіль — дуже рідкісний збіг.');set('rand','v','');}
+function dice(){const a=num('rmin'),b=num('rmax');if(!(b>=a)){set('rand','n','Максимум має бути не меншим за мінімум.');return}
+ const v=Math.round(Math.random()*(b-a)+a);randAdd(v,{f:`=ROUND(RAND()*(${b}-${a})+${a};0)`,v:String(v)});
+ set('rand','n','У Excel є й готова функція <b>RANDBETWEEN(мін;макс)</b>, але зараз ти зібрав її сам із RAND і ROUND.');}
+function mod(){let a=Math.floor(num('ma')),b=Math.floor(num('mb'));
+ if(!(a>=0&&b>=1)){set('mod','n','Введи ділене ≥ 0 і дільник ≥ 1.');return}a=Math.min(a,60);b=Math.min(b,20);
+ const q=Math.floor(a/b),r=a%b;set('mod','f',`=MOD(${a};${b})`);set('mod','r',`Остача: ${r}`);
+ let h='<div class=dots>';for(let k=0;k<q;k++)h+=`<div class=grp>${'<i></i>'.repeat(b)}</div>`;
+ if(r)h+=`<div class="grp rem">${'<i></i>'.repeat(r)}</div>`;h+='</div>';set('mod','v',h);
+ set('mod','n',`${a} = ${b} × ${q} + ${r}. Розкладаємо ${a} кружечків по групах по ${b}; що не вмістилось — остача (рожева група).`+(b==2?` Остача ${r?'1 — число непарне':'0 — число парне'}.`:r==0?' Остача 0 означає, що ділене кратне дільнику.':''));}
+function product(){const v=[0,1,2,3,4].map(i=>$('#pr'+i).value).filter(x=>x!=='').map(Number);
+ set('product','f',`=PRODUCT(${v.map(f).join(';')})`);
+ if(!v.length){set('product','r','—');set('product','n','Введи хоча б одне число.');set('product','v','');return}
+ const p=v.reduce((x,y)=>x*y,1);set('product','r',f(p));set('product','v',`<b>${v.map(f).join(' × ')} = ${f(p)}</b>`);
+ set('product','n','Порожні поля пропущено. Для двох-трьох чисел зручніше зірочка, а для діапазону — PRODUCT(A1:A10). В українському Excel: <b>ДОБУТОК</b>.');}
+const wire={power:[power,['pa','pn']],round:[round,['ra','rn']],abs:[abs,['an']],mod:[mod,['ma','mb']],product:[product,[0,1,2,3,4].map(i=>'pr'+i)]};
+for(const k in wire){const[fn,ids]=wire[k];ids.forEach(id=>$('#'+id).addEventListener('input',fn));fn();}
+$('#rb').onclick=rand;$('#rb2').onclick=dice;rand();
+document.addEventListener('keydown',e=>{if(e.key=='F9'&&$('#p-rand').classList.contains('on')){e.preventDefault();rand()}});
+const start=F.findIndex(o=>'#'+o.id==location.hash);show(start<0?0:start);
+</script>
+</body>
+</html>
