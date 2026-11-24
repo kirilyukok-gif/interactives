@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Конструктор моделі «сутність–зв’язок»</title>
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#1d2430;--mut:#5b6575;--line:#8792a2;--bd:#d5dae2;--acc:#2563a8;--ok:#1b7a3d;--bad:#b3261e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181f;--panel:#1d232d;--ink:#e8ecf2;--mut:#9aa5b5;--line:#7d889a;--bd:#333d4b;--acc:#7fb2ee;--ok:#5fd18a;--bad:#ff8a80}}
+:root[data-theme="dark"]{--bg:#14181f;--panel:#1d232d;--ink:#e8ecf2;--mut:#9aa5b5;--line:#7d889a;--bd:#333d4b;--acc:#7fb2ee;--ok:#5fd18a;--bad:#ff8a80}
+*{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Georgia,"Times New Roman",serif}
+main{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:1.4rem;margin:0 0 4px}
+p.lead{margin:0 0 12px;color:var(--mut)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--bd);border-radius:8px;padding:8px;margin-bottom:10px}
+.bar .sep{width:1px;align-self:stretch;background:var(--bd);margin:0 4px}
+button{font:inherit;font-size:.9rem;background:var(--bg);color:var(--ink);border:1px solid var(--bd);border-radius:6px;padding:6px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+button:hover{border-color:var(--acc)}
+button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button.on{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+#rbox input{font:inherit;padding:6px 8px;border:1px solid var(--acc);border-radius:6px;background:var(--bg);color:var(--ink);min-width:200px}
+#rbox{align-items:center}
+button svg{width:26px;height:18px}
+.sh{fill:var(--bg);stroke:var(--ink);stroke-width:1.5}
+#wrap{background:var(--panel);border:1px solid var(--bd);border-radius:8px;overflow:hidden;touch-action:none}
+svg#cv{display:block;width:100%;height:auto;user-select:none}
+.n{cursor:grab}
+.n text{font:16px Georgia,serif;fill:#1d2430;text-anchor:middle;pointer-events:none}
+.n .key{text-decoration:underline}
+.sel{stroke:var(--acc)!important;stroke-width:3!important}
+.el{stroke:var(--line);stroke-width:2;fill:none}
+.hit{stroke:transparent;stroke-width:16;fill:none;cursor:pointer}
+.lab{font:bold 20px Georgia,serif;fill:var(--ink);text-anchor:middle}
+.labbg{fill:var(--panel)}
+#msg{margin-top:10px;background:var(--panel);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;min-height:48px}
+#msg ul{margin:6px 0 0;padding-left:0;list-style:none}
+#msg li{padding:2px 0}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+.hint{color:var(--mut);font-size:.9rem;margin:8px 0 0}
+</style>
+</head>
+<body>
+<main>
+<h1>Конструктор моделі «сутність–зв’язок»</h1>
+<p class="lead">Побудуйте модель будь-якої предметної області з сутностей, їхніх властивостей і зв’язків між ними.</p>
+
+<div class="bar" role="toolbar" aria-label="Інструменти">
+  <button id="bE" title="Додати сутність"><svg viewBox="0 0 26 18"><rect class="sh" x="2" y="3" width="22" height="12"/></svg>Сутність</button>
+  <button id="bA" title="Додати властивість"><svg viewBox="0 0 26 18"><ellipse class="sh" cx="13" cy="9" rx="11" ry="7"/></svg>Властивість</button>
+  <button id="bR" title="Додати зв’язок"><svg viewBox="0 0 26 18"><polygon class="sh" points="13,1 25,9 13,17 1,9"/></svg>Зв’язок</button>
+  <span class="sep"></span>
+  <button id="bC">Лінія: з’єднати</button>
+  <span class="sep"></span>
+  <button id="b1">Позначка 1</button>
+  <button id="bN">Позначка N</button>
+  <button id="b0">Без позначки</button>
+  <button id="bD">Суцільна / пунктир</button>
+  <span class="sep"></span>
+  <button id="bRen">Перейменувати</button>
+  <button id="bK">Ключова (підкреслити)</button>
+  <button id="bDel">Видалити</button>
+</div>
+<div class="bar">
+  <button id="bChk">Перевірити модель</button>
+  <button id="bClr">Очистити</button>
+</div>
+
+<div id="rbox" class="bar" style="display:none"><label for="rin">Нова назва:</label><input id="rin" type="text" maxlength="40" autocomplete="off"><button id="rok">Застосувати</button><button id="rno">Скасувати</button></div>
+<div id="wrap"><svg id="cv" viewBox="0 0 1000 560" role="img" aria-label="Полотно моделі"></svg></div>
+<p class="hint">Додайте блоки кнопками, перетягуйте їх мишею чи пальцем. Двічі клацніть блок, щоб ввести назву. Щоб з’єднати, увімкніть «Лінія», потім клацніть по двох блоках. Клацніть лінію, щоб вибрати її й поставити позначку 1 або N чи зробити пунктирною. Delete — видалити вибране.</p>
+<div id="msg" aria-live="polite">Почніть із додавання сутності.</div>
+</main>
+
+<script>
+(function(){
+var svg=document.getElementById('cv'),NS='http://www.w3.org/2000/svg';
+var nodes=[],edges=[],sel=null,mode=null,pend=null,uid=1,drag=null;
+var FILL={E:'#c9ecfb',A:'#fbd0c6',R:'#d6d3ee'};
+var DEF={E:'Сутність',A:'Властивість',R:'Зв’язок'};
+function el(t,a,p){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
+function size(n){var w=Math.max(80,n.text.length*10+36);
+  if(n.t=='E')return{w:Math.max(110,w),h:50};
+  if(n.t=='A')return{w:w+16,h:56};
+  return{w:Math.max(110,w+24),h:70}}
+function byId(i){return nodes.filter(function(n){return n.id==i})[0]}
+function render(){
+  svg.innerHTML='';
+  edges.forEach(function(e,i){
+    var a=byId(e.a),b=byId(e.b),g=el('g',{});
+    var d='M'+a.x+' '+a.y+'L'+b.x+' '+b.y;
+    var p=el('path',{d:d,class:'el'+(sel&&sel.k=='e'&&sel.i==i?' sel':'')},g);
+    if(e.dash)p.setAttribute('stroke-dasharray','9 6');
+    var h=el('path',{d:d,class:'hit'},g);
+    h.addEventListener('pointerdown',function(ev){ev.stopPropagation();sel={k:'e',i:i};render()});
+    if(e.lab){
+      var mx=(a.x+b.x)/2,my=(a.y+b.y)/2-14;
+      el('circle',{cx:mx,cy:my-7,r:14,class:'labbg'},g);
+      var t=el('text',{x:mx,y:my,class:'lab'},g);t.textContent=e.lab}
+  });
+  nodes.forEach(function(n){
+    var s=size(n),g=el('g',{class:'n',transform:'translate('+n.x+','+n.y+')'});
+    var c=(sel&&sel.k=='n'&&sel.i==n.id||pend==n.id)?' sel':'',at={fill:FILL[n.t],stroke:'#4a5568','stroke-width':1.8,class:c};
+    if(n.t=='E'){at.x=-s.w/2;at.y=-s.h/2;at.width=s.w;at.height=s.h;el('rect',at,g)}
+    else if(n.t=='A'){at.rx=s.w/2;at.ry=s.h/2;el('ellipse',at,g)}
+    else{at.points='0,'+(-s.h/2)+' '+s.w/2+',0 0,'+s.h/2+' '+(-s.w/2)+',0';el('polygon',at,g)}
+    var t=el('text',{y:6,class:n.key?'key':''},g);t.textContent=n.text;
+    if(n.key)t.setAttribute('text-decoration','underline');
+    g.addEventListener('pointerdown',function(ev){ev.stopPropagation();down(ev,n)});
+    g.addEventListener('dblclick',function(){ren(n)});
+  });
+}
+function pt(ev){var r=svg.getBoundingClientRect();return{x:(ev.clientX-r.left)*1000/r.width,y:(ev.clientY-r.top)*560/r.height}}
+function down(ev,n){
+  if(mode=='C'){
+    if(pend==null){pend=n.id;say('Оберіть другий блок для лінії.')}
+    else if(pend!=n.id){
+      var ex=edges.some(function(e){return(e.a==pend&&e.b==n.id)||(e.b==pend&&e.a==n.id)});
+      if(!ex)edges.push({a:pend,b:n.id,lab:'',dash:false});
+      pend=null;say('Лінію додано. Клацніть її, щоб поставити позначку 1 або N.')}
+    else pend=null;
+    render();return}
+  var now=Date.now();if(last.id==n.id&&now-last.t<400){last={id:0,t:0};ren(n);return}last={id:n.id,t:now};
+  sel={k:'n',i:n.id};var p=pt(ev);drag={n:n,dx:n.x-p.x,dy:n.y-p.y};
+  svg.setPointerCapture&&0;render()}
+window.addEventListener('pointermove',function(ev){
+  if(!drag)return;var p=pt(ev);
+  drag.n.x=Math.max(40,Math.min(960,p.x+drag.dx));drag.n.y=Math.max(30,Math.min(530,p.y+drag.dy));render()});
+window.addEventListener('pointerup',function(){drag=null});
+svg.addEventListener('pointerdown',function(){sel=null;pend=null;render()});
+function add(t){
+  var k=nodes.length;
+  nodes.push({id:uid++,t:t,x:150+(k*70)%700,y:100+(k*53)%380,text:DEF[t]});
+  sel={k:'n',i:uid-1};mode=null;sync();render();say('Блок додано. Двічі клацніть його, щоб ввести назву.')}
+var rn=null,last={id:0,t:0};
+function ren(n){rn=n;var b=$('rbox'),i=$('rin');b.style.display='flex';i.value=n.text;i.focus();i.select()}
+function rdone(ok){var i=$('rin');if(ok&&rn&&i.value.trim()){rn.text=i.value.trim()}rn=null;$('rbox').style.display='none';render()}
+$('rok').onclick=function(){rdone(true)};$('rno').onclick=function(){rdone(false)};
+$('rin').addEventListener('keydown',function(e){e.stopPropagation();if(e.key=='Enter')rdone(true);if(e.key=='Escape')rdone(false)});
+function say(h){document.getElementById('msg').innerHTML=h}
+function sync(){document.getElementById('bC').classList.toggle('on',mode=='C')}
+function $(i){return document.getElementById(i)}
+$('bE').onclick=function(){add('E')};$('bA').onclick=function(){add('A')};$('bR').onclick=function(){add('R')};
+$('bC').onclick=function(){mode=mode=='C'?null:'C';pend=null;sync();render();say(mode?'Режим лінії: клацніть по двох блоках.':'Режим лінії вимкнено.')};
+function setLab(v){if(sel&&sel.k=='e'){edges[sel.i].lab=v;render()}else say('Спершу клацніть лінію, до якої потрібна позначка.')}
+$('b1').onclick=function(){setLab('1')};$('bN').onclick=function(){setLab('N')};$('b0').onclick=function(){setLab('')};
+$('bD').onclick=function(){if(sel&&sel.k=='e'){edges[sel.i].dash=!edges[sel.i].dash;render()}else say('Спершу клацніть лінію.')};
+$('bRen').onclick=function(){if(sel&&sel.k=='n')ren(byId(sel.i));else say('Спершу виберіть блок.')};
+$('bK').onclick=function(){if(sel&&sel.k=='n'){var n=byId(sel.i);n.key=!n.key;render()}else say('Спершу виберіть властивість.')};
+function del(){
+  if(!sel)return;
+  if(sel.k=='e')edges.splice(sel.i,1);
+  else{var id=sel.i;nodes=nodes.filter(function(n){return n.id!=id});edges=edges.filter(function(e){return e.a!=id&&e.b!=id})}
+  sel=null;render()}
+$('bDel').onclick=del;
+window.addEventListener('keydown',function(e){if(e.key=='Delete'||e.key=='Backspace'){if(document.activeElement.tagName!='BUTTON'){del()}}});
+$('bClr').onclick=function(){nodes=[];edges=[];sel=null;pend=null;render();say('Полотно очищено.')};
+$('bChk').onclick=function(){
+  var L=[];function r(ok,t){L.push('<li class="'+(ok?'ok':'bad')+'">'+(ok?'✓ ':'✗ ')+t+'</li>')}
+  var E=nodes.filter(function(n){return n.t=='E'}),R=nodes.filter(function(n){return n.t=='R'}),A=nodes.filter(function(n){return n.t=='A'});
+  function nb(n){return edges.filter(function(e){return e.a==n.id||e.b==n.id}).map(function(e){var o=byId(e.a==n.id?e.b:e.a);return{o:o,e:e}})}
+  if(!nodes.length){say('Полотно порожнє. Додайте хоча б одну сутність.');return}
+  r(E.length>0,'Є принаймні одна сутність');
+  var bad=nodes.filter(function(n){return n.text==DEF[n.t]});
+  r(!bad.length,'Усі блоки мають власні назви'+(bad.length?' (без назви: '+bad.length+')':''));
+  var seen={},dup=[];nodes.forEach(function(n){var k=n.t+n.text.toLowerCase();if(seen[k])dup.push(n.text);seen[k]=1});
+  r(!dup.length,'Назви блоків одного виду не повторюються'+(dup.length?' («'+dup.join('», «')+'»)':''));
+  var iso=nodes.filter(function(n){return !nb(n).length});
+  r(!iso.length,'Кожен блок з’єднано лінією'+(iso.length?' (окремі: '+iso.map(function(n){return '«'+n.text+'»'}).join(', ')+')':''));
+  var aw=A.filter(function(a){return !nb(a).some(function(x){return x.o.t!='A'})});
+  r(!aw.length,'Кожна властивість належить сутності або зв’язку'+(aw.length?' (без власника: '+aw.map(function(n){return '«'+n.text+'»'}).join(', ')+')':''));
+  var ea=E.filter(function(en){return !nb(en).some(function(x){return x.o.t=='A'})});
+  r(!ea.length,'Кожна сутність має властивості'+(ea.length?' (без властивостей: '+ea.map(function(n){return '«'+n.text+'»'}).join(', ')+')':''));
+  var rw=R.filter(function(x){return nb(x).filter(function(y){return y.o.t=='E'}).length<2});
+  r(!rw.length,'Кожен зв’язок поєднує щонайменше дві сутності'+(rw.length?' (неповні: '+rw.map(function(n){return '«'+n.text+'»'}).join(', ')+')':''));
+  var nl=edges.filter(function(e){var a=byId(e.a),b=byId(e.b);return((a.t=='R'&&b.t=='E')||(a.t=='E'&&b.t=='R'))&&!e.lab});
+  r(!nl.length,'Біля ліній «зв’язок–сутність» стоять позначки 1 або N'+(nl.length?' (без позначки: '+nl.length+')':''));
+  var wrong=edges.filter(function(e){var a=byId(e.a),b=byId(e.b);return(a.t=='E'&&b.t=='E')||(a.t=='R'&&b.t=='R')||(a.t=='A'&&b.t=='A')});
+  r(!wrong.length,'Немає ліній між блоками одного виду (сутність–сутність, зв’язок–зв’язок, властивість–властивість)');
+  var all=L.join('').indexOf('class="bad"')<0;
+  say((all?'<b class="ok">Модель побудовано коректно!</b>':'<b>Результат перевірки:</b>')+'<ul>'+L.join('')+'</ul>')};
+render();
+})();
+</script>
+</body>
+</html>
